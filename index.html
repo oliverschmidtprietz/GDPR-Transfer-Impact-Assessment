@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSFER IMPACT — onezero.legal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg: #F5F0E8;
+    --bg-alt: #EDE8DF;
+    --ink: #1A1A1A;
+    --ink-light: #4A4A4A;
+    --ink-muted: #8A8A7A;
+    --green: #00E676;
+    --green-dark: #00C853;
+    --pink: #FF4081;
+    --mint-hl: #B8F0D0;
+    --pink-hl: #FF80AB;
+    --blue-hl: #BFD9F5;
+    --border-w: 2.5px;
+    --skill-color: #BFE6D4;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* ── NAV ─────────────────────────────── */
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: var(--border-w) solid var(--ink);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.nav-section-icon {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.6rem;
+    background: var(--pink);
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-brand {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.nav-brand a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.nav-brand a:hover { color: var(--pink); }
+
+.nav-divider {
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+}
+
+.nav-skill {
+    font-size: 0.75rem;
+    background: var(--skill-color);
+    border: 1.5px solid var(--ink);
+    padding: 0.2rem 0.6rem;
+    letter-spacing: 0.04em;
+}
+
+.nav-version {
+    font-size: 0.72rem;
+    border: 1.5px solid var(--ink);
+    padding: 0.15rem 0.5rem;
+    letter-spacing: 0.04em;
+}
+
+.nav-spacer { flex: 1; }
+
+.nav-back {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border: 1.5px solid var(--ink);
+}
+
+.nav-back:hover { background: var(--ink); color: var(--bg); }
+
+/* ── HERO ────────────────────────────── */
+.hero {
+    padding: 3.5rem 1.5rem 3rem;
+    max-width: 1000px;
+}
+
+.badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 3rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.9rem;
+    width: fit-content;
+    border: 1.5px solid var(--ink);
+}
+
+.badge--live { background: var(--pink); color: white; border-color: var(--pink); }
+.badge--live::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+}
+
+.badge--color { background: var(--skill-color); }
+
+.hero h1 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: clamp(2.8rem, 9vw, 5.2rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 2.5rem;
+}
+
+.hero h1 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    text-transform: lowercase;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.hero h1 .hl-accent {
+    background: var(--skill-color);
+    padding: 0 0.15em;
+}
+
+.hero-sub {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 640px;
+}
+
+.hero-sub .hl {
+    background: var(--blue-hl);
+    padding: 0.05em 0.25em;
+}
+
+/* ── MARQUEE ─────────────────────────── */
+.marquee-wrap {
+    background: var(--ink);
+    overflow: hidden;
+    padding: 0.9rem 0;
+    border-top: var(--border-w) solid var(--ink);
+    border-bottom: var(--border-w) solid var(--ink);
+}
+
+.marquee-track {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee-scroll 50s linear infinite;
+}
+
+.marquee-text {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.2rem;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    padding-right: 2rem;
+}
+
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ── SECTION ─────────────────────────── */
+.section {
+    padding: 4rem 1.5rem 1rem;
+    max-width: 1000px;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-label .section-icon {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1rem;
+    color: var(--ink);
+}
+
+.section h2 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: clamp(1.8rem, 6vw, 3.2rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+}
+
+.section h2 em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    text-transform: lowercase;
+    font-weight: 400;
+}
+
+.section-intro {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    max-width: 620px;
+    color: var(--ink-light);
+    margin-bottom: 3rem;
+}
+
+/* ── FEATURE CARDS ───────────────────── */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem;
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.feature-card {
+    border: var(--border-w) solid var(--ink);
+    padding: 1.5rem;
+    transition: transform 0.15s ease;
+}
+
+.feature-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+
+.feature-number {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 2.8rem;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+
+.feature-name {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.8rem;
+}
+
+.feature-desc {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--ink-light);
+}
+
+/* ── WORKFLOW ────────────────────────── */
+.workflow-list {
+    padding: 0 1.5rem 4rem;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.workflow-step {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+    padding: 1rem 1.4rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.4rem;
+    align-items: start;
+    transition: background 0.15s;
+}
+
+.workflow-step:hover { background: var(--skill-color); }
+
+.workflow-step-num {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.4rem;
+    line-height: 1;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--skill-color);
+    border: 2px solid var(--ink);
+    flex-shrink: 0;
+}
+
+.workflow-step-body { padding-top: 0.15rem; }
+
+.workflow-step-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.3rem;
+}
+
+.workflow-step-desc {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--ink-light);
+}
+
+.workflow-step-desc .hl {
+    background: var(--blue-hl);
+    padding: 0.05em 0.25em;
+}
+
+/* ── MODES ───────────────────────────── */
+.modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.mode-card {
+    border: var(--border-w) solid var(--ink);
+    padding: 1.5rem;
+}
+
+.mode-name {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.01em;
+}
+
+.mode-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--ink-light);
+}
+
+/* ── FOLDER TREE ─────────────────────── */
+.tree-wrap {
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.tree-card {
+    border: var(--border-w) solid var(--ink);
+    background: var(--ink);
+    color: #E0E0E0;
+    padding: 1.8rem 2rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    overflow-x: auto;
+}
+
+.tree-card pre {
+    font-family: 'JetBrains Mono', monospace;
+    color: #E0E0E0;
+    white-space: pre;
+}
+
+.tree-card .comment { color: #00E676; }
+
+/* ── DEPLOYMENT ──────────────────────── */
+.deployment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.deploy-card {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+    padding: 1.8rem;
+}
+
+.deploy-card h3 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.deploy-card ol {
+    padding-left: 1.2rem;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--ink-light);
+}
+
+.deploy-card code {
+    background: var(--ink);
+    color: var(--green);
+    padding: 0.05em 0.4em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+}
+
+.deploy-card pre {
+    background: var(--ink);
+    color: var(--green);
+    padding: 0.8rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    margin-top: 0.8rem;
+    overflow-x: auto;
+}
+
+/* ── OUTPUTS LIST ────────────────────── */
+.outputs-list {
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.output-row {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+    padding: 1.2rem 1.6rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.4rem;
+    align-items: center;
+}
+
+.output-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.output-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--ink-light);
+}
+
+/* ── EVALS ───────────────────────────── */
+.evals-section {
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.evals-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    border: var(--border-w) solid var(--ink);
+    background: var(--skill-color);
+    padding: 1.4rem 1.5rem;
+}
+
+.stat-value {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 2.8rem;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-light);
+}
+
+.eval-topics {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+}
+
+.eval-row {
+    padding: 1rem 1.5rem;
+    border-bottom: 1.5px solid var(--ink);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.2rem;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.eval-row:last-child { border-bottom: none; }
+
+.eval-id {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 0.95rem;
+    width: 2.5rem;
+}
+
+.eval-asserts {
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.2rem 0.5rem;
+    letter-spacing: 0.06em;
+}
+
+/* ── REGULATORY TABLE ────────────────── */
+.reg-table {
+    padding: 0 1.5rem 4rem;
+    max-width: 1000px;
+}
+
+.reg-grid {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+}
+
+.reg-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1.5px solid var(--ink);
+    font-size: 0.85rem;
+}
+
+.reg-row:last-child { border-bottom: none; }
+
+.reg-doc { font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+.reg-ref { color: var(--ink-light); }
+
+/* ── TRUST SECTION ───────────────────── */
+.trust-section {
+    padding: 4rem 1.5rem;
+    max-width: 1000px;
+}
+
+.trust-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.trust-card {
+    border: var(--border-w) solid var(--ink);
+    background: var(--bg);
+    padding: 1.4rem 1.6rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.2rem;
+    align-items: start;
+}
+
+.trust-icon {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    line-height: 1;
+    margin-top: 0.1rem;
+}
+
+.trust-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.25rem; }
+.trust-desc { font-size: 0.78rem; line-height: 1.6; color: var(--ink-light); }
+
+.trust-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.25rem 0.55rem;
+    align-self: end;
+    white-space: nowrap;
+}
+
+/* ── README BLOCK ────────────────────── */
+.readme-section {
+    background: var(--bg-alt);
+    border-top: var(--border-w) solid var(--ink);
+    padding: 4rem 1.5rem;
+}
+
+.readme-inner {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.readme-content {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--ink);
+}
+
+.readme-content h1 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin: 0 0 1.5rem;
+    line-height: 1.05;
+}
+
+.readme-content h2 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    margin: 2.5rem 0 1rem;
+    line-height: 1.1;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.3rem;
+}
+
+.readme-content h3 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    margin: 1.8rem 0 0.8rem;
+}
+
+.readme-content p { margin-bottom: 1rem; }
+
+.readme-content ul, .readme-content ol {
+    margin: 1rem 0 1rem 1.5rem;
+}
+
+.readme-content li { margin-bottom: 0.4rem; }
+
+.readme-content strong { font-weight: 700; }
+
+.readme-content code {
+    background: var(--ink);
+    color: var(--green);
+    padding: 0.08em 0.4em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+}
+
+.readme-content pre {
+    background: var(--ink);
+    color: #E0E0E0;
+    padding: 1.2rem 1.4rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+.readme-content pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+.readme-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.82rem;
+    border: 2px solid var(--ink);
+}
+
+.readme-content thead {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+.readme-content th, .readme-content td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border: 1px solid var(--ink);
+}
+
+.readme-content th {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+}
+
+.readme-content a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+
+.readme-content blockquote {
+    border-left: 4px solid var(--ink);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--ink-light);
+    font-style: italic;
+}
+
+.readme-content hr {
+    border: none;
+    border-top: 2px solid var(--ink);
+    margin: 2rem 0;
+}
+
+/* ── FOOTER ──────────────────────────── */
+.page-footer {
+    border-top: var(--border-w) solid var(--ink);
+    padding: 2rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-text {
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+}
+
+.footer-links { display: flex; gap: 1.5rem; }
+
+.footer-links a {
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.footer-links a:hover { color: var(--ink); }
+
+/* ── RESPONSIVE ──────────────────────── */
+@media (max-width: 720px) {
+    .features-grid, .modes-grid { grid-template-columns: 1fr; }
+    .deployment-grid { grid-template-columns: 1fr; }
+    .output-row { grid-template-columns: 1fr; gap: 0.4rem; }
+    .reg-row { grid-template-columns: 1fr; gap: 0.3rem; }
+    .trust-card { grid-template-columns: 1fr; gap: 0.6rem; }
+    .trust-badge { width: fit-content; }
+    .nav { padding: 0.7rem 1rem; flex-wrap: wrap; }
+    .nav-skill { display: none; }
+    .nav-back { font-size: 0.65rem; padding: 0.3rem 0.6rem; }
+    .hero, .section, .trust-section { padding-left: 1rem; padding-right: 1rem; }
+    .features-grid, .workflow-list, .modes-grid, .tree-wrap, .deployment-grid, .outputs-list, .evals-section, .reg-table {
+        padding-left: 1rem; padding-right: 1rem;
+    }
+}
+</style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="nav-section-icon">§</div>
+        <span class="nav-brand"><a href="index.html">onezero.legal</a></span>
+        <span class="nav-divider">/</span>
+        <span class="nav-skill">/SKILLS/TIA</span>
+        <div class="nav-spacer"></div>
+        <a href="index.html" class="nav-back">← PORTFOLIO</a>
+    </nav>
+
+    <section class="hero">
+        <div class="badges">
+            <div class="badge badge--live">LIVE · v1.0 STABLE</div>
+            <div class="badge">BUILD 2026.05.27</div>
+            <div class="badge badge--color">CHAPTER V</div>
+            <div class="badge">AGPL-3.0 · 12 EVAL CASES · 89 ASSERTIONS</div>
+        </div>
+
+        <h1>THIRD-COUNTRY<br>TRANSFERS<br><em>by</em> <span class="hl-accent">SIX-STEP</span><br>METHOD.</h1>
+
+        <p class="hero-sub">Runs the EDPB Recommendations 01/2020 six-step assessment on a Chapter V transfer. <span class="hl">Transfer qualification</span>, <span class="hl">Art. 45 adequacy fast-track</span>, <span class="hl">Art. 46 full assessment</span>, <span class="hl">four essential guarantees</span>, <span class="hl">balanced Art. 49 derogation</span>, and <span class="hl">RoPA interchange delta</span> — across 12 country profiles.</p>
+    </section>
+
+    <div class="marquee-wrap">
+        <div class="marquee-track">
+            <span class="marquee-text">GDPR CHAPTER V &nbsp; · &nbsp; ART. 44–49 &nbsp; · &nbsp; EDPB REC 01/2020 &nbsp; · &nbsp; EDPB REC 02/2020 &nbsp; · &nbsp; EDPB GUIDELINES 05/2021 &nbsp; · &nbsp; EDPB GUIDELINES 2/2018 &nbsp; · &nbsp; CNIL TIA GUIDE 2025 &nbsp; · &nbsp; SCHREMS II C-311/18 &nbsp; · &nbsp; EU-US DPF 2023/1795 &nbsp; · &nbsp; OLG MÜNCHEN 21 U 3882/25 E &nbsp; · &nbsp; ESSENTIAL GUARANTEES &nbsp; · &nbsp; ROSENTHAL METHOD &nbsp; · &nbsp; GDPR CHAPTER V &nbsp; · &nbsp; ART. 44–49 &nbsp; · &nbsp; EDPB REC 01/2020 &nbsp; · &nbsp; EDPB REC 02/2020 &nbsp; · &nbsp; EDPB GUIDELINES 05/2021 &nbsp; · &nbsp; EDPB GUIDELINES 2/2018 &nbsp; · &nbsp; CNIL TIA GUIDE 2025 &nbsp; · &nbsp; SCHREMS II C-311/18 &nbsp; · &nbsp; EU-US DPF 2023/1795 &nbsp; · &nbsp; OLG MÜNCHEN 21 U 3882/25 E &nbsp; · &nbsp; ESSENTIAL GUARANTEES &nbsp; · &nbsp; ROSENTHAL METHOD</span>
+        </div>
+    </div>
+
+    <section class="section" id="features">
+        <div class="section-label"><span class="section-icon">§</span> 01 · CAPABILITIES</div>
+        <h2>SIX PRIMITIVES.<br><em>One</em> SKILL.</h2>
+        <p class="section-intro">
+            Each capability is documented separately, tested separately, and called by
+            the workflow at the right moment. Compose them or invoke individually.
+        </p>
+    </section>
+
+    <div class="features-grid">
+        <div class="feature-card" style="background-color: #C8F0DC;">
+            <div class="feature-number">01</div>
+            <div class="feature-name">TRANSFER QUALIFICATION</div>
+            <div class="feature-desc">EDPB Guidelines 05/2021 three cumulative criteria. Settles whether a Chapter V transfer even exists before any assessment runs; the finding is a deliverable in its own right.</div>
+        </div>
+        <div class="feature-card" style="background-color: #FFE0A0;">
+            <div class="feature-number">02</div>
+            <div class="feature-name">ESSENTIAL GUARANTEES</div>
+            <div class="feature-desc">EDPB Recommendations 02/2020 four-pillar test on each surveillance law: clear rules / necessary &amp; proportionate / independent oversight / effective remedies. Each rated adequate, concerns, or insufficient.</div>
+        </div>
+        <div class="feature-card" style="background-color: #D8C8F0;">
+            <div class="feature-number">03</div>
+            <div class="feature-name">COUNTRY PROFILES</div>
+            <div class="feature-desc">12 pre-built jurisdictions — US (non-DPF), US (DPF), UK, India, China, Brazil, Australia, Singapore, Turkey, UAE, South Africa, Russia — plus a generic questionnaire for unlisted countries.</div>
+        </div>
+        <div class="feature-card" style="background-color: #C0DCF4;">
+            <div class="feature-number">04</div>
+            <div class="feature-name">PRACTICAL RISK (ROSENTHAL)</div>
+            <div class="feature-desc">Step 3 Block C: importer request history, realistic targeting basis, plaintext-access necessity, realistic authority interest — without a statistical probability engine.</div>
+        </div>
+        <div class="feature-card" style="background-color: #FFD0B8;">
+            <div class="feature-number">05</div>
+            <div class="feature-name">BALANCED ART. 49</div>
+            <div class="feature-desc">EDPB Guidelines 2/2018 &#x27;last resort&#x27; framing set against OLG München 21 U 3882/25 e and the von Danwitz counter-position. Both positions documented as defensible.</div>
+        </div>
+        <div class="feature-card" style="background-color: #B0E0D4;">
+            <div class="feature-number">06</div>
+            <div class="feature-name">ROPA INTERCHANGE</div>
+            <div class="feature-desc">Emits a JSON delta conforming to RoPA&#x27;s interchange-inbound-schema v1.0 — patches tia_ref, tia_status, supplementary_measures, and review dates into the RoPA sidecar.</div>
+        </div>
+    </div>
+
+    <section class="section" id="workflow">
+        <div class="section-label"><span class="section-icon">§</span> 02 · WORKFLOW</div>
+        <h2>FROM INPUT<br><em>to</em> ARTEFACT.</h2>
+        <p class="section-intro">
+            Ten structured steps. The human stays accountable; the skill carries the
+            structure, the citations, and the document trail.
+        </p>
+    </section>
+
+    <div class="workflow-list">
+        <div class="workflow-step">
+            <div class="workflow-step-num">01</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Transfer qualification gate</div>
+                <div class="workflow-step-desc">Apply the three cumulative criteria of EDPB Guidelines 05/2021. Fail any → output a Transfer Qualification Finding; Chapter V does not apply, but Art. 5/24/32 still bind.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">02</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">TIA requirement check</div>
+                <div class="workflow-step-desc">Art. 45 adequacy → lightweight path. Art. 49 derogation → derogation path. Art. 46 tool (SCCs, BCRs, ad hoc) → full TIA from Step 1.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">03</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 1 — Know your transfer</div>
+                <div class="workflow-step-desc">Capture exporter, importer, country, data categories, subjects, purpose, volume, frequency, format, onward transfers. Flag each onward hop for separate assessment.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">04</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 2 — Identify the tool</div>
+                <div class="workflow-step-desc">Document the Chapter V mechanism and execution dates. Then ask whether any Art. 49 derogation could serve as a primary or backup basis.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">05</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 3 — Assess third-country law</div>
+                <div class="workflow-step-desc">Block A data-protection framework, Block B essential-guarantees rating per surveillance law, Block C practical risk to this data.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">06</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 3 conclusion — three-way fork</div>
+                <div class="workflow-step-desc">Tool effective → Step 6. Tool ineffective → Step 4. Ineffective on paper but no realistic basis the law applies → Step 6 with substantive, non-boilerplate justification (CNIL option 3).</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">07</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 4 — Supplementary measures</div>
+                <div class="workflow-step-desc">Auto-suggest measures matched to identified gaps. Assess effectiveness, not mere presence. If gaps stay open → restructure or suspend.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">08</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 5 — Implementation plan</div>
+                <div class="workflow-step-desc">Measures, owners, due dates, SCC Annex II edits and side letters, encryption / pseudonymisation pipelines, timeline.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">09</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Step 6 — Re-assessment triggers</div>
+                <div class="workflow-step-desc">Standing triggers (adequacy review, DPF fragility), event-driven (new law, SA action, government request), periodic (12-month default). Set next review date.</div>
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="workflow-step-num">10</div>
+            <div class="workflow-step-body">
+                <div class="workflow-step-title">Output generation</div>
+                <div class="workflow-step-desc">Markdown report, .docx formal TIA with CNIL-style tables and sign-off block, JSON delta for RoPA, and a one-page Transfer Risk Summary for batches.</div>
+            </div>
+        </div>
+    </div>
+
+
+    <section class="section" id="modes">
+        <div class="section-label"><span class="section-icon">§</span> 03 · MODES</div>
+        <h2>FOUR PATHS.<br><em>One</em> OUTCOME.</h2>
+        <p class="section-intro">
+            Match the workflow to the situation. The skill router picks automatically;
+            you can override.
+        </p>
+    </section>
+
+    <div class="modes-grid">
+        <div class="mode-card" style="background-color: #C8F0DC;">
+            <div class="mode-name">ADEQUACY FAST-TRACK</div>
+            <div class="mode-desc">Destination has an Art. 45 decision. Lightweight: document the decision, conditions, expiry, and DPF fragility — no full TIA required.</div>
+        </div>
+        <div class="mode-card" style="background-color: #FFE0A0;">
+            <div class="mode-name">FULL ART. 46</div>
+            <div class="mode-desc">SCCs, BCRs, ad hoc clauses, codes, or certifications. Runs the complete six-step pipeline including the essential-guarantees and practical-risk assessment.</div>
+        </div>
+        <div class="mode-card" style="background-color: #D8C8F0;">
+            <div class="mode-name">ART. 49 DEROGATION</div>
+            <div class="mode-desc">Balanced derogation analysis. EDPB Guidelines 2/2018 position against OLG München / von Danwitz counter-position; document which basis the practitioner relies on.</div>
+        </div>
+        <div class="mode-card" style="background-color: #C0DCF4;">
+            <div class="mode-name">QUALIFICATION ONLY</div>
+            <div class="mode-desc">&#x27;Is this even a transfer?&#x27; Applies the three cumulative criteria and returns a Transfer Qualification Finding without running the pipeline.</div>
+        </div>
+    </div>
+
+    <section class="section" id="tree">
+        <div class="section-label"><span class="section-icon">§</span> 04 · ANATOMY</div>
+        <h2>WHAT'S<br>IN <em>the</em> SKILL.</h2>
+        <p class="section-intro">
+            Single-folder skill. SKILL.md is the runtime spec; references hold the
+            knowledge corpus; evals hold the proof.
+        </p>
+    </section>
+
+    <div class="tree-wrap">
+        <div class="tree-card">
+            <pre>tia/
+├── evals  <span class="comment"># Test cases + assertions</span>
+│   └── evals.json  <span class="comment"># 12 cases, 89 assertions</span>
+├── references  <span class="comment"># Reference corpus</span>
+│   ├── country-profiles
+│   │   ├── ae.md
+│   │   ├── au.md
+│   │   ├── br.md
+│   │   ├── cn.md
+│   │   ├── generic-assessment.md
+│   │   ├── in.md
+│   │   ├── ru.md
+│   │   ├── sg.md
+│   │   ├── tr.md
+│   │   ├── uk-post-adequacy.md
+│   │   ├── us-dpf.md
+│   │   ├── us-non-dpf.md
+│   │   └── za.md
+│   ├── art49-derogations.md
+│   ├── edpb-six-steps.md
+│   ├── essential-guarantees.md
+│   ├── interchange-delta.md
+│   ├── schrems-ii-holdings.md
+│   ├── sources.md
+│   ├── supplementary-measures.md
+│   ├── tia-template.md
+│   └── transfer-qualification.md
+├── CHANGELOG.md  <span class="comment"># Version history</span>
+├── README.md  <span class="comment"># Deployment guide</span>
+└── SKILL.md  <span class="comment"># Main skill instructions</span></pre>
+        </div>
+    </div>
+
+    <section class="section" id="deploy">
+        <div class="section-label"><span class="section-icon">§</span> 05 · DEPLOYMENT</div>
+        <h2>INSTALL<br><em>and</em> INVOKE.</h2>
+        <p class="section-intro">
+            Two deployment surfaces. The skill auto-triggers on relevant keywords once
+            installed.
+        </p>
+    </section>
+
+    <div class="deployment-grid">
+        <div class="deploy-card" style="background-color: #BFE6D4;">
+            <h3>CLAUDE.AI USER SKILLS</h3>
+            <ol>
+                <li>Settings → Profile → Custom Skills</li>
+                <li>Upload the entire <code>tia/</code> folder</li>
+                <li>Skill auto-triggers on relevant keywords</li>
+            </ol>
+        </div>
+        <div class="deploy-card">
+            <h3>CLAUDE CODE / MCP</h3>
+            <ol>
+                <li>Copy folder to your skills directory:</li>
+            </ol>
+            <pre>cp -r tia/ \
+   ~/.claude/skills/user/</pre>
+        </div>
+    </div>
+
+    <section class="section" id="outputs">
+        <div class="section-label"><span class="section-icon">§</span> 06 · OUTPUTS</div>
+        <h2>WHAT YOU<br><em>get</em> BACK.</h2>
+        <p class="section-intro">
+            Every output is documented, version-pinned, and traceable to its source citation.
+        </p>
+    </section>
+
+    <div class="outputs-list">
+        <div class="output-row">
+            <div class="output-name">Markdown TIA Report</div>
+            <div class="output-desc">In-session preview and working document. Sections mirror Steps 1–6.</div>
+        </div>
+        <div class="output-row">
+            <div class="output-name">.docx Formal TIA</div>
+            <div class="output-desc">Compliance-file document using the tia-template structure: CNIL-style tables, cover page, assessor + DPO sign-off block, country-profile annex.</div>
+        </div>
+        <div class="output-row">
+            <div class="output-name">JSON Interchange Delta</div>
+            <div class="output-desc">Sidecar conforming to interchange-inbound-schema v1.0. Patches tia_ref, tia_status, supplementary_measures[], tia_completed_date, tia_review_date. Lands in RoPA&#x27;s inbound folder.</div>
+        </div>
+        <div class="output-row">
+            <div class="output-name">Transfer Risk Summary</div>
+            <div class="output-desc">One-page executive overview for batch assessments. Per-transfer row: destination, mechanism, verdict, key risk, measures. No numerical scores.</div>
+        </div>
+        <div class="output-row">
+            <div class="output-name">Transfer Qualification Finding</div>
+            <div class="output-desc">Standalone deliverable documenting which criterion fails and why Chapter V does not apply — proof the question was assessed.</div>
+        </div>
+    </div>
+
+    <section class="section" id="evals">
+        <div class="section-label"><span class="section-icon">§</span> 07 · EVALS</div>
+        <h2>TESTED<br><em>before</em> SHIPPED.</h2>
+        <p class="section-intro">
+            Every release runs against a fixed test suite. Assertions check numeric
+            consistency, citation accuracy, and decision-tree branches.
+        </p>
+    </section>
+
+    <div class="evals-section">
+        <div class="evals-stats">
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Test Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89</div>
+                <div class="stat-label">Assertions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Coverage Required</div>
+            </div>
+        </div>
+        <div class="eval-topics">
+            <div class="eval-row">
+                <div class="eval-id">01</div>
+                <div>We&#x27;re an Austrian company</div>
+                <div class="eval-asserts">8 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">02</div>
+                <div>Our French employee George travels to Brazil for a one-week conference</div>
+                <div class="eval-asserts">7 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">03</div>
+                <div>We&#x27;re a German manufacturer transferring HR data of EU employees to our Japanese...</div>
+                <div class="eval-asserts">7 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">04</div>
+                <div>We&#x27;re a German company that wants to use a US-based vendor listed as DPF-certifi...</div>
+                <div class="eval-asserts">6 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">05</div>
+                <div>We&#x27;re an Italian retailer using a US-based marketing analytics SaaS (NOT DPF-cer...</div>
+                <div class="eval-asserts">8 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">06</div>
+                <div>We&#x27;re considering moving our customer data warehouse to a Chinese cloud provider...</div>
+                <div class="eval-asserts">8 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">07</div>
+                <div>We operate a global social media platform</div>
+                <div class="eval-asserts">7 ASSERTS</div>
+            </div>
+            <div class="eval-row">
+                <div class="eval-id">08</div>
+                <div>We&#x27;re a small German legal firm (12 lawyers) using a niche Indian legal-research...</div>
+                <div class="eval-asserts">8 ASSERTS</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" id="regulatory">
+        <div class="section-label"><span class="section-icon">§</span> 08 · REGULATORY BASIS</div>
+        <h2>WHAT IT<br><em>cites.</em></h2>
+        <p class="section-intro">
+            Every legal verdict resolves to one of these instruments. No invented
+            articles, no synthetic recitals.
+        </p>
+    </section>
+
+    <div class="reg-table">
+        <div class="reg-grid">
+            <div class="reg-row">
+                <div class="reg-doc">GDPR Chapter V (Arts. 44–49)</div>
+                <div class="reg-ref">Statutory basis for third-country transfers.</div>
+            </div>
+            <div class="reg-row">
+                <div class="reg-doc">EDPB Recommendations 01/2020 v2.0</div>
+                <div class="reg-ref">Six-step methodology for supplementary measures (18 June 2021).</div>
+            </div>
+            <div class="reg-row">
+                <div class="reg-doc">EDPB Recommendations 02/2020</div>
+                <div class="reg-ref">Four essential guarantees for surveillance law (10 November 2020).</div>
+            </div>
+            <div class="reg-row">
+                <div class="reg-doc">EDPB Guidelines 05/2021 v2.0</div>
+                <div class="reg-ref">Three cumulative criteria for transfer qualification (14 February 2023).</div>
+            </div>
+            <div class="reg-row">
+                <div class="reg-doc">CJEU C-311/18 (Schrems II)</div>
+                <div class="reg-ref">Adequacy invalidation and the pre-transfer TIA obligation (16 July 2020).</div>
+            </div>
+            <div class="reg-row">
+                <div class="reg-doc">OLG München, 21 U 3882/25 e</div>
+                <div class="reg-ref">Art. 49(1)(b) accepted for inherently international services (11 May 2026).</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="trust-section" id="trust">
+        <div class="section-label"><span class="section-icon">§</span> 09 · TRUST</div>
+        <h2>EVERY STEP,<br><em>auditable.</em></h2>
+        <p class="section-intro">
+            The trace is the product. Nothing happens off the record — no hidden tool
+            calls, no silent retrieval, no opaque chain-of-thought.
+        </p>
+        <div class="trust-grid">
+            <div class="trust-card">
+                <div class="trust-icon">§</div>
+                <div class="trust-body">
+                    <div class="trust-title">Source-anchored output.</div>
+                    <div class="trust-desc">Every guarantee rating, every Step 3 conclusion, every derogation verdict traces back to a cited EDPB, CNIL, CJEU, or national-court authority.</div>
+                </div>
+                <div class="trust-badge">VERIFIED</div>
+            </div>
+            <div class="trust-card">
+                <div class="trust-icon">¶</div>
+                <div class="trust-body">
+                    <div class="trust-title">Reproducible assessments.</div>
+                    <div class="trust-desc">Workspace checkpoints after every step; resume from state.json and recreate the TIA years later for audit or litigation.</div>
+                </div>
+                <div class="trust-badge">IMMUTABLE</div>
+            </div>
+            <div class="trust-card">
+                <div class="trust-icon">†</div>
+                <div class="trust-body">
+                    <div class="trust-title">Effectiveness before sign-off.</div>
+                    <div class="trust-desc">Supplementary measures are tested for whether they actually close the gap — not merely listed — before any document ships.</div>
+                </div>
+                <div class="trust-badge">ENFORCED</div>
+            </div>
+            <div class="trust-card">
+                <div class="trust-icon">**</div>
+                <div class="trust-body">
+                    <div class="trust-title">EU-native.</div>
+                    <div class="trust-desc">Built around EDPB Recommendations, CNIL tables, and emerging EU national case law. Not a retrofitted US-centric checklist.</div>
+                </div>
+                <div class="trust-badge">NATIVE</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="readme-section" id="readme">
+        <div class="readme-inner">
+            <div class="section-label" style="margin-bottom: 1.5rem;">
+                <span class="section-icon">§</span> 10 · README.MD
+            </div>
+            <div class="readme-content"><h1>TIA (Transfer Impact Assessment) — Deployment Guide</h1>
+<h2>Overview</h2>
+<p>GDPR Transfer Impact Assessment skill — structured Chapter V transfer guidance for Claude. Combines:</p>
+<ul>
+<li><strong>EDPB Recommendations 01/2020</strong> six-step methodology (regulatory backbone)</li>
+<li><strong>CNIL TIA Guide</strong> (final version, January 2025) — structured assessment tables and three-way Step 3 conclusion</li>
+<li><strong>EDPB Recommendations 02/2020</strong> — four essential guarantees framework for surveillance-law assessment</li>
+<li><strong>EDPB Guidelines 05/2021</strong> — three cumulative criteria for transfer qualification, with 12 example scenarios</li>
+<li><strong>Rosenthal method</strong> influence — pragmatic Step 3 Block C ("realistic risk to this data") without statistical probability calculations</li>
+<li><strong>12 pre-built country profiles</strong> — US (non-DPF), US (DPF), UK, India, China, Brazil, Australia, Singapore, Turkey, UAE, South Africa, Russia + generic questionnaire</li>
+<li><strong>Balanced Art. 49 treatment</strong> — EDPB Guidelines 2/2018 + OLG München (21 U 3882/25 e, 2026) judicial counter-position</li>
+<li><strong>Audit-ready output</strong> — Markdown report + .docx formal document + JSON delta for RoPA interchange</li>
+</ul>
+<h2>File Structure</h2>
+<pre><code>skills/tia/
+├── SKILL.md                              # Main skill instructions (deploy this)
+├── CHANGELOG.md                          # Version history
+├── README.md                             # This file
+├── evals/
+│   └── evals.json                        # 12 behavioural test cases
+└── references/
+    ├── edpb-six-steps.md                 # EDPB Rec 01/2020 methodology
+    ├── essential-guarantees.md           # EDPB Rec 02/2020 four-pillar framework
+    ├── transfer-qualification.md         # EDPB Guidelines 05/2021 — 3 criteria + 12 examples
+    ├── art49-derogations.md              # Art. 49 balanced assessment (EDPB + judicial)
+    ├── supplementary-measures.md         # Catalog (technical / contractual / organisational)
+    ├── schrems-ii-holdings.md            # C-311/18 key holdings + implications
+    ├── tia-template.md                   # Document template structure
+    ├── interchange-delta.md              # RoPA delta format
+    ├── sources.md                        # Regulatory source references
+    └── country-profiles/
+        ├── us-non-dpf.md                # USA outside DPF
+        ├── us-dpf.md                    # USA DPF-certified
+        ├── uk-post-adequacy.md          # UK (adequacy renewed Dec 2025)
+        ├── in.md                        # India
+        ├── cn.md                        # China
+        ├── br.md                        # Brazil
+        ├── au.md                        # Australia
+        ├── sg.md                        # Singapore
+        ├── tr.md                        # Turkey
+        ├── ae.md                        # UAE (DIFC / ADGM / mainland)
+        ├── za.md                        # South Africa
+        ├── ru.md                        # Russia
+        └── generic-assessment.md        # Guided questionnaire for unlisted countries
+</code></pre>
+<h2>Deployment</h2>
+<h3>Claude.ai (User Skills)</h3>
+<ol>
+<li>Go to <strong>Settings → Profile → Custom Skills</strong> (or equivalent).</li>
+<li>Upload the entire <code>tia/</code> folder structure.</li>
+<li>The skill triggers on "TIA", "Transfer Impact Assessment", "Schrems II", "third-country transfer", "Art. 46", "Art. 49", and similar terms.</li>
+</ol>
+<h3>Claude Code / Custom Setup</h3>
+<pre><code class="language-bash"># Symlink the skill from the monorepo
+ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
+</code></pre>
+<h2>Usage</h2>
+<h3>Quick Start</h3>
+<p>Example prompts that trigger the skill:</p>
+<ul>
+<li>"We're using SCCs Module 2 to transfer HR data to our payroll processor in India. Do I need supplementary measures?"</li>
+<li>"I need a TIA for our US cloud provider — they're DPF-certified."</li>
+<li>"Is remote support access from our Indian sub-processor considered a Chapter V transfer?"</li>
+<li>"Can we rely on Art. 49(1)(b) for our global SaaS user data flows to the US?"</li>
+</ul>
+<h3>Trigger Phrases</h3>
+<ul>
+<li>"TIA", "Transfer Impact Assessment"</li>
+<li>"Schrems II", "Chapter V"</li>
+<li>"Art. 44 / 45 / 46 / 47 / 49"</li>
+<li>"transfer to [country]" (US, India, China, etc.)</li>
+<li>"SCCs assessment", "BCRs"</li>
+<li>"supplementary measures"</li>
+<li>"DPF transfer", "EU-US Data Privacy Framework"</li>
+<li>"adequacy decision"</li>
+<li>"essential guarantees"</li>
+<li>"Drittlandsübermittlung", "Drittlandtransfer"</li>
+</ul>
+<h3>Assessment Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>When</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single transfer assessment</td>
+<td>One known transfer</td>
+<td>Markdown + .docx TIA</td>
+</tr>
+<tr>
+<td>Batch / registry</td>
+<td>Multiple transfers</td>
+<td>Registry + per-transfer pipeline + Transfer Risk Summary</td>
+</tr>
+<tr>
+<td>Discovery (standalone)</td>
+<td>No RoPA, multiple transfers</td>
+<td>Discovery walkthrough → registry → assessments</td>
+</tr>
+<tr>
+<td>RoPA import</td>
+<td>Has RoPA sidecar</td>
+<td>Import transfers → assess each</td>
+</tr>
+<tr>
+<td>Adequacy fast-track</td>
+<td>Destination has adequacy</td>
+<td>Lightweight assessment + monitoring triggers</td>
+</tr>
+<tr>
+<td>Art. 49 path</td>
+<td>Derogation potentially applies</td>
+<td>Balanced assessment (EDPB + judicial)</td>
+</tr>
+<tr>
+<td>Transfer qualification only</td>
+<td>"Is this even a transfer?"</td>
+<td>Qualification finding</td>
+</tr>
+<tr>
+<td>Review / update</td>
+<td>Existing TIA + legal change</td>
+<td>Re-assessment of affected sections</td>
+</tr>
+</tbody>
+</table>
+<h2>Outputs</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown TIA Report</td>
+<td>In-session preview, working document</td>
+</tr>
+<tr>
+<td>.docx Formal TIA Document</td>
+<td>Compliance file, CNIL-style tables, sign-off block</td>
+</tr>
+<tr>
+<td>JSON Delta</td>
+<td>RoPA interchange — patches <code>tia_ref</code>, <code>tia_status</code>, <code>supplementary_measures[]</code>, dates</td>
+</tr>
+<tr>
+<td>Transfer Risk Summary</td>
+<td>One-page executive overview for batch assessments</td>
+</tr>
+</tbody>
+</table>
+<h2>Regulatory Basis</h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Reference</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GDPR Chapter V</td>
+<td>Arts. 44–49</td>
+<td>Statute</td>
+</tr>
+<tr>
+<td>Schrems II</td>
+<td>CJEU C-311/18 (16 July 2020)</td>
+<td>Adequacy + TIA obligation</td>
+</tr>
+<tr>
+<td>EDPB Rec 01/2020</td>
+<td>v2.0 (18 June 2021)</td>
+<td>Six-step methodology</td>
+</tr>
+<tr>
+<td>EDPB Rec 02/2020</td>
+<td>(10 November 2020)</td>
+<td>Essential guarantees</td>
+</tr>
+<tr>
+<td>EDPB Guidelines 05/2021</td>
+<td>v2.0 (14 February 2023)</td>
+<td>Transfer qualification</td>
+</tr>
+<tr>
+<td>EDPB Guidelines 2/2018</td>
+<td>(25 May 2018)</td>
+<td>Art. 49 derogations (EDPB view)</td>
+</tr>
+<tr>
+<td>CNIL TIA Guide</td>
+<td>January 2025 (final)</td>
+<td>Practical structured tables</td>
+</tr>
+<tr>
+<td>OLG München, 21 U 3882/25 e</td>
+<td>(11 May 2026)</td>
+<td>Art. 49(1)(b) for global services</td>
+</tr>
+<tr>
+<td>Implementing Decision (EU) 2023/1795</td>
+<td>(10 July 2023)</td>
+<td>EU-US DPF adequacy</td>
+</tr>
+</tbody>
+</table>
+<h2>Cross-Skill Integration</h2>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Direction</th>
+<th>What flows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RoPA</td>
+<td>Inbound</td>
+<td>Read sidecar; filter third-country transfers; pre-populate Step 1</td>
+</tr>
+<tr>
+<td>RoPA</td>
+<td>Outbound</td>
+<td>Emit delta file per assessed transfer (conforming to RoPA inbound schema v1.0)</td>
+</tr>
+<tr>
+<td>DPIA Sentinel</td>
+<td>Flag only</td>
+<td>If Step 3 reveals high-risk processing, flag for Art. 35 DPIA consideration (no auto-trigger)</td>
+</tr>
+</tbody>
+</table>
+<h2>Version History</h2>
+<p>See <a href="CHANGELOG.md">CHANGELOG.md</a> for full version history.</p>
+<h2>License &amp; Disclaimer</h2>
+<p>AGPL-3.0. See repository LICENSE.</p>
+<p><strong>This skill provides structured GDPR Chapter V guidance based on EDPB Recommendations, CNIL guidance, and emerging case law. It is not legal advice. Involve your DPO and qualified counsel for final decisions, especially where the skill flags a transfer for suspension or restructuring. The skill's country profiles reflect the law and practice as of the "Last verified" date stated in each profile — verify current status before formal use.</strong></p>
+<hr>
+<p><em>Created by Oliver Schmidt-Prietz — OneZero Legal</em></p></div>
+        </div>
+    </section>
+
+    <footer class="page-footer">
+        <span class="footer-text">onezero.legal · /SKILLS/TIA · v1.0</span>
+        <nav class="footer-links">
+            <a href="index.html">Portfolio</a>
+            <a href="#features">Capabilities</a>
+            <a href="#workflow">Workflow</a>
+            <a href="#readme">README</a>
+        </nav>
+    </footer>
+
+</body>
+</html>
