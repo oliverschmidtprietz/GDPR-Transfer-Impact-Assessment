@@ -28,7 +28,7 @@ Example: `tia-9a7fa4c8-3b0a-4f9d-a5d6-8e2b7a0f9c12-2026-05-28T1430+0200.delta.js
 ```json
 {
   "schema_version": "1.0",
-  "source_skill": "tia v0.9",
+  "source_skill": "tia v1.0",
   "produced_at": "2026-05-28T14:30:00+02:00",
   "target_activity_id": "9a7fa4c8-3b0a-4f9d-a5d6-8e2b7a0f9c12",
   "target_entry_type": "controller_activity",
