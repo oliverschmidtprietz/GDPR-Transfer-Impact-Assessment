@@ -6,7 +6,7 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.0
+  version: 1.1
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill

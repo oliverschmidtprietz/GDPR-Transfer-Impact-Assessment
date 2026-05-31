@@ -1,6 +1,6 @@
 # USA (DPF-certified) — TIA Country Profile
 
-Last verified: 2026-05-29
+Last verified: 2026-05-31
 
 Use this profile ONLY when the US importer is actively certified under the EU-US Data Privacy Framework (verify at dataprivacyframework.gov). For non-DPF US importers, use `us-non-dpf.md`.
 
@@ -35,6 +35,8 @@ Both are executive-branch constructs. Risks:
 - Schrems III challenge is a foreseeable possibility
 - DPF status of an individual organisation can lapse (failure to recertify, FTC action)
 
+**Realised degradations since the 2023 adequacy decision (as at 2026-05-31):** the risks above are no longer purely hypothetical. The PCLOB — part of the oversight architecture the adequacy decision relied on — lost its quorum in January 2025 (three members removed; reinstatement ordered then stayed on appeal, deferred pending the Supreme Court) and cannot start new oversight; and *Trump v. Slaughter* (US Supreme Court, argued 8 December 2025, ruling expected ~June 2026) may strip for-cause removal protection from FTC/PCLOB members. The EU General Court **dismissed** the Latombe challenge and upheld the DPF on 3 September 2025, but judged only the facts as they stood at the 2023 adequacy determination — it did not bless this later erosion (Latombe's CJEU appeal, filed 31 October 2025, is pending). These are the precise arguments a Schrems III challenge would run.
+
 **Practical implication:** Do NOT rely on DPF as the sole basis for long-term transfers. Maintain SCCs (with TIA per `us-non-dpf.md`) as a fallback mechanism so transfers can continue if DPF status changes.
 
 ## Data Protection Framework (under DPF)
@@ -63,7 +65,7 @@ The same underlying US laws apply (Section 702 FISA, EO 12333, CLOUD Act). EO 14
 
 - **Guarantee A — clear, precise, accessible rules:** *Concerns.* EO 14086 and its implementing procedures are published, but the underlying FISA 702 targeting/minimisation procedures and EO 12333 activities remain partly classified.
 - **Guarantee B — necessary and proportionate:** *Concerns.* EO 14086 introduces binding necessity/proportionality limits, but bulk collection remains permitted for defined objectives; critics dispute whether this meets the CJEU's strict-necessity standard.
-- **Guarantee C — independent oversight:** *Concerns.* The FISC and PCLOB provide oversight and the DPRC adds a redress layer, but all sit within or adjacent to the executive branch.
+- **Guarantee C — independent oversight:** *Concerns, weakening.* The FISC and PCLOB provide oversight and the DPRC adds a redress layer, but all sit within or adjacent to the executive branch — and the PCLOB has lacked a quorum since January 2025 (reinstatement litigation stayed, deferred pending the Supreme Court), so its independent-oversight role is currently impaired.
 - **Guarantee D — effective remedies:** *Contested.* The DPRC is available to EU data subjects (EU designated a qualifying state, 30 June 2023) but its independence and effectiveness as an Article 47 remedy are untested by the CJEU.
 
 The EU Commission rated these "essentially equivalent"; this is the precise point a Schrems III challenge is expected to test.
@@ -73,7 +75,8 @@ The EU Commission rated these "essentially equivalent"; this is the precise poin
 - Verify certification at dataprivacyframework.gov on the day of the assessment
 - Subscribe to recertification status if relying long-term
 - Monitor US political developments (rescission risk)
-- Monitor Schrems III / Latombe litigation (challenges to the DPF adequacy decision before the EU courts)
+- Monitor Schrems III / Latombe litigation: the EU General Court dismissed Latombe and upheld the DPF on 3 September 2025 (judging only the 2023 adequacy facts); Latombe's CJEU appeal (filed 31 October 2025) is pending
+- Monitor *Trump v. Slaughter* (US Supreme Court, ruling expected ~June 2026) and PCLOB quorum status — both bear on the DPF's independent-oversight foundations
 - Document the fallback path (SCCs + TIA) in case DPF status changes
 
 ## Recommended Supplementary Measures

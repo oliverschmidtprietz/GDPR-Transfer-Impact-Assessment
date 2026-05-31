@@ -29,6 +29,7 @@ CELEX: `32016R0679` — Regulation (EU) 2016/679
 - **Guidelines 05/2021** v2.0 (adopted 14 February 2023) — Interplay between Article 3 and Chapter V. Three cumulative criteria for "transfer."
 - **Guidelines 2/2018** (adopted 25 May 2018) — Derogations of Article 49.
 - **Opinion 22/2024** — Use of (sub-)processors and Chapter V applicability.
+- **Guidelines 02/2024** v2.1 (adopted 5 June 2025) — Article 48 GDPR: a third-country authority's request or judgment is not itself a lawful ground for transfer or disclosure absent an international agreement; assess case-by-case before disclosing. Reinforces the CLOUD Act / compelled-disclosure analysis.
 
 ## CNIL Guidance
 

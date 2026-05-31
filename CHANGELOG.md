@@ -6,6 +6,20 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.1] — 2026-05-31
+
+US-surveillance currency refresh. The US country profiles are sharpened to reflect developments since the v1.0 source date (2026-05-29); methodology and country ratings unchanged.
+
+- **FISA 702 status concretised.** `us-non-dpf.md`: the RISAA reauthorisation lapsed at the 20 April 2026 sunset; Section 702 is now operating on short-term extensions (clean 45-day extension to ~12 June 2026; no long-term deal; warrant reform unresolved). Still operative; the standing Step 6 monitoring trigger is retained with the next cliff dated.
+- **PCLOB quorum collapse + SCOTUS added to Guarantee C.** Both `us-dpf.md` and `us-non-dpf.md`: the PCLOB lost its quorum in January 2025 (reinstatement ordered then stayed on appeal, deferred pending the Supreme Court), and *Trump v. Slaughter* (decision expected ~June 2026) may end for-cause removal protection for FTC/PCLOB members — degradations of the DPF's independent-oversight foundations that post-date the 2023 adequacy snapshot.
+- **Latombe sharpened.** The EU General Court **dismissed** Latombe and upheld the DPF on 3 September 2025 (judging only the 2023 adequacy facts); the CJEU appeal (filed 31 October 2025) is pending. Reflected in the fragility and monitoring sections.
+- **EDPB Guidelines 02/2024 (Art. 48) cited.** `sources.md`: a third-country authority's order is not itself a transfer/disclosure ground absent an international agreement — reinforces the CLOUD Act / compelled-disclosure analysis.
+- **"Last verified" bumped to 2026-05-31** on the two US profiles only (the other country profiles are unchanged and remain at 2026-05-29).
+
+**Status:** reviewed (carried from v1.0).
+
+---
+
 ## [v1.0] — 2026-05-29
 
 First reviewed release. Promoted from v0.9 after the iteration-1 skill-vs-no-skill eval benchmark.

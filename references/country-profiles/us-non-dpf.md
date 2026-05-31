@@ -1,6 +1,6 @@
 # USA (non-DPF) — TIA Country Profile
 
-Last verified: 2026-05-29
+Last verified: 2026-05-31
 
 For DPF-certified US importers, use `us-dpf.md` instead. This profile covers transfers to US importers that are NOT certified under the EU-US Data Privacy Framework.
 
@@ -26,13 +26,13 @@ For DPF-certified US importers, use `us-dpf.md` instead. This profile covers tra
 
 **Scope:** Permits targeted collection of communications of non-US persons reasonably believed to be located outside the US. Compels US-based electronic communication service providers (ECSPs) to assist.
 
-**Powers:** Bulk collection through PRISM (downstream from US providers) and UPSTREAM (cable taps). The Reforming Intelligence and Securing America Act (RISAA, signed 20 April 2024) reauthorised Section 702 for two years — sunset 20 April 2026 — and broadened the definition of electronic communication service provider. **This profile's verification date (2026-05-29) falls after that sunset: confirm whether Section 702 was further reauthorised, has lapsed, or is under a short-term extension before relying on this assessment, and carry it as a standing Step 6 monitoring trigger.**
+**Powers:** Bulk collection through PRISM (downstream from US providers) and UPSTREAM (cable taps). The Reforming Intelligence and Securing America Act (RISAA, signed 20 April 2024) reauthorised Section 702 for two years — sunset 20 April 2026 — and broadened the definition of electronic communication service provider. **Status as at 2026-05-31:** the RISAA two-year reauthorisation lapsed at the 20 April 2026 sunset, and Section 702 is now operating on short-term extensions — a clean 45-day extension runs to ~12 June 2026, with no long-term reauthorisation agreed and the warrant-requirement reform unresolved. Section 702 therefore **remains operative**; re-verify at each extension cliff (next ~12 June 2026) and carry it as a standing Step 6 monitoring trigger.
 
 **Guarantee A — Clear, precise, accessible rules:** **Insufficient.** FISA Court orders and procedures are classified. Section 702 procedures are partially declassified but the "About" collection rule and minimisation procedures remain opaque.
 
 **Guarantee B — Necessary and proportionate:** **Insufficient.** Bulk collection by design. CJEU in Schrems II concluded Section 702 surveillance "is not limited to what is strictly necessary."
 
-**Guarantee C — Independent oversight:** **Concerns identified.** FISA Court provides judicial oversight but operates ex parte (no adversary). PCLOB is advisory.
+**Guarantee C — Independent oversight:** **Concerns identified — and degrading since the 2023 adequacy assessment.** FISA Court provides judicial oversight but operates ex parte (no adversary). The PCLOB — relied on in the EO 14086 oversight architecture — lost its quorum in January 2025 (three members removed; a district court ordered reinstatement, but the order was stayed on appeal and the matter deferred pending the Supreme Court), leaving it unable to start new oversight. Separately, *Trump v. Slaughter* (US Supreme Court, argued 8 December 2025, decision expected ~June 2026) may remove for-cause removal protection for FTC and PCLOB members — a structural-independence pillar the adequacy decision relied on. Both developments post-date the 2023 snapshot the EU General Court endorsed in Latombe.
 
 **Guarantee D — Effective remedies:** **Concerns identified (post-EO 14086).** EO 14086 created the Data Protection Review Court (DPRC), and the EU/EEA was designated a "qualifying state" on 30 June 2023 — so the redress mechanism **is** available to EU data subjects for non-DPF transfers too, not only in the DPF context. Its *effectiveness* as an Article 47 Charter remedy is, however, contested: the DPRC is an executive-branch body (not a court in the EU sense), its proceedings are non-adversarial and classified, and it has not been tested by the CJEU. Treat redress as legally available but of uncertain effectiveness pending a future CJEU ruling.
 

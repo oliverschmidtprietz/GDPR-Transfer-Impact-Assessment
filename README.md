@@ -1,7 +1,7 @@
 # GDPR Transfer Impact Assessment (TIA) — Deployment Guide
 
 ![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)
-![Skill version: v1.0](https://img.shields.io/badge/skill-v1.0-green.svg)
+![Skill version: v1.1](https://img.shields.io/badge/skill-v1.1-green.svg)
 ![For: Claude](https://img.shields.io/badge/for-Claude-orange.svg)
 
 See [CHANGELOG.md](CHANGELOG.md) for version history. Canonical source: the private monorepo `oliverschmidtprietz/claude-skills` (`skills/tia/`).
