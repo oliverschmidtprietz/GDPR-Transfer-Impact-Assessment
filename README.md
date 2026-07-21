@@ -108,7 +108,7 @@ Example prompts that trigger the skill:
 |---|---|
 | Markdown TIA Report | In-session preview, working document |
 | .docx Formal TIA Document | Compliance file, CNIL-style tables, sign-off block |
-| JSON Delta | RoPA interchange — patches `tia_ref`, `tia_status`, `supplementary_measures[]`, dates |
+| JSON Delta | Optional RoPA interchange — patches only `tia_ref` and completed-assessment `tia_date`; detailed status, review timing, and measures remain in the TIA artifact |
 | Transfer Risk Summary | One-page executive overview for batch assessments |
 
 ## Regulatory Basis
@@ -130,7 +130,7 @@ Example prompts that trigger the skill:
 | Skill | Direction | What flows |
 |---|---|---|
 | RoPA | Inbound | Read sidecar; filter third-country transfers; pre-populate Step 1 |
-| RoPA | Outbound | Emit delta file per assessed transfer (conforming to RoPA inbound schema v1.0) |
+| RoPA | Outbound | Optionally emit a delta per assessed transfer with `tia_ref` + completed-assessment `tia_date` (conforming to RoPA inbound schema v2.0); TIA remains fully standalone |
 | DPIA Sentinel | Flag only | If Step 3 reveals high-risk processing, flag for Art. 35 DPIA consideration (no auto-trigger) |
 
 ## Version History

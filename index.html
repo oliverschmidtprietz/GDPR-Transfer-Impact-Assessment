@@ -811,7 +811,7 @@ body {
 
     <section class="hero">
         <div class="badges">
-            <div class="badge badge--live">LIVE · v1.1 STABLE</div>
+            <div class="badge badge--live">LIVE · v1.2 STABLE</div>
             <div class="badge">BUILD 2026.05.27</div>
             <div class="badge badge--color">CHAPTER V</div>
             <div class="badge">AGPL-3.0 · 12 EVAL CASES · 89 ASSERTIONS</div>
@@ -866,7 +866,7 @@ body {
         <div class="feature-card" style="background-color: #B0E0D4;">
             <div class="feature-number">06</div>
             <div class="feature-name">ROPA INTERCHANGE</div>
-            <div class="feature-desc">Emits a JSON delta conforming to RoPA&#x27;s interchange-inbound-schema v1.0 — patches tia_ref, tia_status, supplementary_measures, and review dates into the RoPA sidecar.</div>
+            <div class="feature-desc">Emits a JSON delta conforming to RoPA&#x27;s interchange-inbound-schema v2.0 — patches tia_ref and the completed-assessment tia_date into the RoPA sidecar. TIA status, review dates and supplementary measures stay in the signed TIA artifact.</div>
         </div>
     </div>
 
@@ -1072,7 +1072,7 @@ body {
         </div>
         <div class="output-row">
             <div class="output-name">JSON Interchange Delta</div>
-            <div class="output-desc">Sidecar conforming to interchange-inbound-schema v1.0. Patches tia_ref, tia_status, supplementary_measures[], tia_completed_date, tia_review_date. Lands in RoPA&#x27;s inbound folder.</div>
+            <div class="output-desc">Sidecar conforming to interchange-inbound-schema v2.0. Patches tia_ref and tia_date only. Lands in RoPA&#x27;s inbound folder.</div>
         </div>
         <div class="output-row">
             <div class="output-name">Transfer Risk Summary</div>
@@ -1387,7 +1387,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 </tr>
 <tr>
 <td>JSON Delta</td>
-<td>RoPA interchange — patches <code>tia_ref</code>, <code>tia_status</code>, <code>supplementary_measures[]</code>, dates</td>
+<td>RoPA interchange — patches <code>tia_ref</code> and <code>tia_date</code></td>
 </tr>
 <tr>
 <td>Transfer Risk Summary</td>
@@ -1470,7 +1470,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 <tr>
 <td>RoPA</td>
 <td>Outbound</td>
-<td>Emit delta file per assessed transfer (conforming to RoPA inbound schema v1.0)</td>
+<td>Emit delta file per assessed transfer (conforming to RoPA inbound schema v2.0)</td>
 </tr>
 <tr>
 <td>DPIA Sentinel</td>
@@ -1490,7 +1490,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
     </section>
 
     <footer class="page-footer">
-        <span class="footer-text">onezero.legal · /SKILLS/TIA · v1.1</span>
+        <span class="footer-text">onezero.legal · /SKILLS/TIA · v1.2</span>
         <nav class="footer-links">
             <a href="https://onezero.legal">Portfolio</a>
             <a href="#features">Capabilities</a>

@@ -6,6 +6,35 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.2] — 2026-07-21
+
+The TIA→RoPA delta contract moves to **inbound schema 2.0**. `add` now upserts, determinism moves to an `expected_post_state` precondition, and patch paths are constrained to a declared allowed-path set. Coordinated release with `ropa` v2.14 — the two must move together.
+
+**Why 2.0 and not 1.1.** The combined surface is narrowing, not widening. Relaxing `add` is widening for producers, but the allowed-path set and the precondition both *reject* payloads that 1.0 accepted — most importantly a delta from the shipped `tia` v1.1, which wrote four fields RoPA does not recognise. A 1.0 delta is now rejected outright rather than reinterpreted under 2.0 rules, because silent reinterpretation is the defect 2.0 exists to close.
+
+**The merge semantics (decided 2026-07-21).**
+
+- `add` **upserts** — it writes the value whether or not the leaf is present; `replace` is an exact synonym. The producer is stateless (it never reads RoPA's sidecar to choose an operation), a re-send is idempotent, there is no time-of-check/time-of-use window, and `add` now matches RFC 6902 §4.1, so the "RFC 6902 subset" label is accurate again and standard JSON-Patch libraries work on both sides.
+- **`expected_post_state.values`** is a hard precondition: a mismatch **rejects** the whole delta (it was a warning). Declaring a value for a field the delta does *not* patch is the idiomatic concurrent-edit check.
+- **The allowed-path set** is declared as the `path` pattern in `interchange-inbound-schema.json` and rejects the whole delta on any path outside it. With `add` permissive this is the primary guard on the register.
+
+**Producer changes:**
+
+- `references/interchange-delta.md` — the canonical example now declares `schema_version` 2.0, emits `add` for both leaves, and carries an `expected_post_state`. The first-write/later-write `replace` block is **removed**: there is no longer any reason for the producer to inspect leaf presence. The example's `rationale_doc_sha256` was a placeholder (`<sha256 hex of the docx>`) that failed the schema's `^[a-f0-9]{64}$` pattern — the documented artifact a model copies at runtime was itself schema-invalid, and is now a valid sample and validated by the suite.
+- `SKILL.md`, `README.md`, `evals/evals.json`, `index.html` — aligned to 2.0. The landing page had continued to advertise the removed contract (`tia_status`, `supplementary_measures[]`, `tia_completed_date`, `tia_review_date`) after those fields were withdrawn; that page is published, so the correction ships with this release.
+
+**Test suite — it can now fail.**
+
+- Assertions are derived from the **documented example** and that example is run through the applier. The previous suite extracted only `path` and never `op`, and its one op assertion compared two static fixtures against each other — a tautology over test data. It stayed green when the exact defect it was written to eliminate was reintroduced.
+- The applier reads the allowed-path set **from the JSON Schema** rather than from a constant in the test file, so the guarantee lives in the contract an adapter validates against.
+- Verified by mutation: corrupting a patch path fails 10 tests; breaking a precondition value fails 5; reverting the applier to 1.0's strict leaf-presence fails 3. Flipping `add`↔`replace` is deliberately *not* a probe any more.
+- `tests/README.md` added, recording the working invocation (`uv run --with pytest --with jsonschema …`) — the suite previously depended on undocumented local setup.
+- The redundant `tia-result-first-write.json` / `tia-result-replacement.json` fixtures are removed; the documented example now covers both base states.
+
+**Status:** reviewed (carried from v1.1).
+
+---
+
 ## [v1.1] — 2026-05-31
 
 US-surveillance currency refresh. The US country profiles are sharpened to reflect developments since the v1.0 source date (2026-05-29); methodology and country ratings unchanged.

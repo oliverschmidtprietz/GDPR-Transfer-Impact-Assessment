@@ -6,7 +6,7 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.1
+  version: 1.2
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill
@@ -139,14 +139,14 @@ Four deliverables (the user picks what they need):
 
 1. **Markdown TIA Report** — in-session preview. Sections mirror Steps 1–6.
 2. **.docx Formal TIA Document** — for the compliance file. Uses `references/tia-template.md` structure with CNIL-style tables, cover page, sign-off block (assessor + DPO), annex with country profile summary.
-3. **JSON Interchange Sidecar** — delta file conforming to `interchange-inbound-schema.json` v1.0. Patches `tia_ref`, `tia_status`, `supplementary_measures[]`, `tia_completed_date`, `tia_review_date`. Lands in `skills/ropa-workspace/<org-slug>/inbound/`. See `references/interchange-delta.md`.
+3. **JSON Interchange Sidecar** — optional delta file conforming to `interchange-inbound-schema.json` **v2.0**. Patches only `tia_ref` and `tia_date`, where `tia_date` is the completed assessment date. Emit `add` for both leaves — `add` upserts, so there is no first-write/later-write distinction and no need to read RoPA's current values. Declare an `expected_post_state` precondition; a mismatch rejects the whole delta. TIA status, next-review date, and supplementary-measure detail remain in the TIA artifact and human-readable delta context — those paths are outside RoPA's allowed-path set and emitting them rejects the delta. When requested, the delta lands in `skills/ropa-workspace/<org-slug>/inbound/`. See `references/interchange-delta.md`.
 4. **Transfer Risk Summary** — one-page executive overview for batch assessments. Per-transfer row: destination, mechanism, verdict, key risk, measures. No numerical scores.
 
 ## Cross-Skill Integration
 
 **Inbound from RoPA:** Read sidecar (`<org-slug>-ropa-sidecar.json`) → filter entries with third-country transfers → pre-populate Step 1 → track `activity_id` UUIDs.
 
-**Outbound to RoPA:** Emit delta file per assessed transfer (see Output #3). The delta is owned by RoPA after writing.
+**Outbound to RoPA (optional):** When the user wants to return results to a RoPA, emit one delta file per assessed transfer (see Output #3). A TIA remains complete and usable without this exchange. The delta is owned by RoPA after writing.
 
 **DPIA trigger:** If Step 3 reveals high-risk processing (Art. 9 special categories + systematic monitoring + third-country risk), flag for the user: "Consider whether a DPIA is required under Art. 35. This transfer's risk profile may meet DPIA threshold criteria." Do NOT auto-trigger DPIA Sentinel — just flag.
 

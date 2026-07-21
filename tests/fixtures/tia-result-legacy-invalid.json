@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "source_skill": "tia v<X.Y>",
+  "produced_at": "2026-05-28T14:30:00+02:00",
+  "target_activity_id": "9a7fa4c8-3b0a-4f9d-a5d6-8e2b7a0f9c12",
+  "target_entry_type": "controller_activity",
+  "patches": [
+    {
+      "op": "replace",
+      "path": "/transfers/0/tia_ref",
+      "value": "TIA-US-2026-001",
+      "field_label": "TIA reference"
+    },
+    {
+      "op": "replace",
+      "path": "/transfers/0/tia_status",
+      "value": "proceed_with_measures",
+      "field_label": "TIA status"
+    },
+    {
+      "op": "replace",
+      "path": "/transfers/0/tia_completed_date",
+      "value": "2026-05-28",
+      "field_label": "TIA completion date"
+    },
+    {
+      "op": "replace",
+      "path": "/transfers/0/tia_review_date",
+      "value": "2027-05-28",
+      "field_label": "TIA next review date"
+    },
+    {
+      "op": "replace",
+      "path": "/transfers/0/supplementary_measures",
+      "value": [
+        "TM-1 encryption-exporter-keys",
+        "CM-1 transparency-obligation",
+        "CM-2 challenge-clause"
+      ],
+      "field_label": "Supplementary measures"
+    }
+  ],
+  "context": {
+    "summary": "Released legacy TIA delta retained as an invalid migration fixture.",
+    "rationale_doc": "skills/tia-workspace/acme-gmbh/TIA-US-2026-001.docx"
+  }
+}

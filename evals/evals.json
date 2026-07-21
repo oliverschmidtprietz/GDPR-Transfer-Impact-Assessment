@@ -142,7 +142,7 @@
     {
       "id": 10,
       "prompt": "I have a RoPA sidecar JSON from our compliance tool. It contains 47 controller_activities. Can you identify which ones need a TIA and walk me through the prioritisation? The sidecar is structured per the RoPA interchange schema v1.5.",
-      "expected_output": "RoPA import workflow: (1) Parse the sidecar's controller_activities[] and processor_activities[]. (2) Filter entries where transfers[] contains third-country destinations (not within EEA, not under adequacy). (3) For each, extract: activity_id (UUID), destination country, mechanism in place, data categories, importer, purpose, sub-processor chains. (4) Build a transfer registry. (5) Prioritise: high-risk countries first (US non-DPF, China, Russia), then adequacy countries (lightweight), then medium-risk (Singapore, Brazil, UK if any complexity). (6) For each transfer, run the 6-step pipeline. (7) Emit a delta file per assessment for RoPA re-ingestion (conforming to inbound schema v1.0). Workspace at skills/tia-workspace/<org-slug>/.",
+      "expected_output": "RoPA import workflow: (1) Parse the sidecar's controller_activities[] and processor_activities[]. (2) Filter entries where transfers[] contains third-country destinations (not within EEA, not under adequacy). (3) For each, extract: activity_id (UUID), destination country, mechanism in place, data categories, importer, purpose, sub-processor chains. (4) Build a transfer registry. (5) Prioritise: high-risk countries first (US non-DPF, China, Russia), then adequacy countries (lightweight), then medium-risk (Singapore, Brazil, UK if any complexity). (6) For each transfer, run the 6-step pipeline. (7) When RoPA return is requested, emit a delta per assessment that patches only /transfers/N/tia_ref and /transfers/N/tia_date, where tia_date is the completed assessment date. Emit add for both leaves \u2014 add upserts under inbound schema 2.0, so there is no first-write/later-write distinction. A patch path outside RoPA's allowed-path set, or a failed expected_post_state precondition, rejects the whole delta. TIA status, next-review date, and supplementary-measure detail remain in the TIA artifact and human context. Workspace at skills/tia-workspace/<org-slug>/.",
       "files": [],
       "expectations": [
         "Identifies the RoPA import workflow correctly",
@@ -150,7 +150,10 @@
         "Excludes EEA and adequacy-covered destinations from the full-TIA queue",
         "Builds a transfer registry with UUIDs preserved from RoPA activity_id",
         "Prioritises high-risk destinations first",
-        "Plans to emit per-assessment delta files conforming to RoPA inbound schema v1.0",
+        "Plans to emit per-assessment delta files conforming to RoPA inbound schema v2.0",
+        "Uses only the canonical RoPA transfer fields tia_ref and completed-assessment tia_date",
+        "Uses add for both canonical leaves because add upserts; does not inspect leaf presence",
+        "Keeps TIA status, next-review date, and supplementary-measure detail in the TIA artifact and human context",
         "References interchange-delta.md and the RoPA inbound schema",
         "Uses workspace pattern (skills/tia-workspace/<org-slug>/)"
       ]

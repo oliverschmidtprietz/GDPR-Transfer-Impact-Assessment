@@ -1,0 +1,10 @@
+{
+  "activity_id": "9a7fa4c8-3b0a-4f9d-a5d6-8e2b7a0f9c12",
+  "transfers": [
+    {
+      "destination_country": "US",
+      "mechanism": "sccs",
+      "mechanism_detail": "EU SCCs Module 2"
+    }
+  ]
+}
