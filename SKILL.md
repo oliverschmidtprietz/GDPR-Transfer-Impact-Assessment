@@ -6,7 +6,7 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.2
+  version: 1.3
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill
@@ -125,6 +125,8 @@ Triggered when Step 3 returns conclusion (2). Load `references/supplementary-mea
 
 If yes → proceed. If no → the transfer cannot proceed as structured. Options: restructure (different importer, different country, different architecture) or suspend.
 
+**Art. 32 boundary:** Chapter V supplementary measures are transfer-specific and stay here — they are selected against a *third-country access* gap under EDPB Recommendations 01/2020, not against general processing risk. The organisation's baseline Art. 32 security posture, and the lifecycle of any measure once adopted (ownership, implementation status, evidence, effectiveness testing), belong to `toms-art32`. Do not assess the baseline here, and do not treat an existing Art. 32 control as a supplementary measure without showing that it actually closes the identified third-country gap.
+
 ### Step 5: Implementation Action Plan
 
 Document: measures to implement, owners, due dates, contractual amendments (SCC Annex II edits, side letters), technical changes (encryption, pseudonymisation pipelines), timeline.
@@ -147,6 +149,8 @@ Four deliverables (the user picks what they need):
 **Inbound from RoPA:** Read sidecar (`<org-slug>-ropa-sidecar.json`) → filter entries with third-country transfers → pre-populate Step 1 → track `activity_id` UUIDs.
 
 **Outbound to RoPA (optional):** When the user wants to return results to a RoPA, emit one delta file per assessed transfer (see Output #3). A TIA remains complete and usable without this exchange. The delta is owned by RoPA after writing.
+
+**Article 32 handoff (`toms-art32`):** route to the `toms-art32` skill when the work moves off the Chapter V question — an accepted supplementary measure that now needs an owner, an implementation status and evidence (Step 5); a question about whether encryption or pseudonymisation is *appropriate to the risk* generally rather than effective against government access specifically; or the Decision 2021/914 **Annex II** TOM text, which `toms-art32` generates from assessed, export-eligible state. Record the transfer-specific reasoning in the TIA; do not build a control catalogue or effectiveness-testing regime here.
 
 **DPIA trigger:** If Step 3 reveals high-risk processing (Art. 9 special categories + systematic monitoring + third-country risk), flag for the user: "Consider whether a DPIA is required under Art. 35. This transfer's risk profile may meet DPIA threshold criteria." Do NOT auto-trigger DPIA Sentinel — just flag.
 

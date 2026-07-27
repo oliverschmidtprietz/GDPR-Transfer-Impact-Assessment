@@ -6,6 +6,17 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.3] — 2026-07-25
+
+Routes Article 32 security-of-processing work to the `toms-art32` skill. Part of the coordinated **sibling-routing pass** (`ropa` v2.15, `dpia-sentinel` v1.11, `dpa-art28` v1.2, `breach-sentinel` v3.3, `tia` v1.3) that closes the toms-art32 portfolio-integration gate recorded as Finding 1 in `docs/projects/gdpr-skills-marathon/ROADMAP-2026-07-25.md`. Routing pointers only — no Article 32 methodology is duplicated into any sibling.
+
+- **Step 4 — Art. 32 boundary.** Chapter V supplementary measures are transfer-specific and stay here: they are selected against a *third-country access* gap under EDPB Recommendations 01/2020, not against general processing risk. The baseline Art. 32 posture, and the lifecycle of any measure once adopted, belong to `toms-art32`. An existing Art. 32 control may not be counted as a supplementary measure without showing it closes the identified third-country gap.
+- **Cross-Skill Integration — Article 32 handoff.** Route to `toms-art32` for an accepted measure that now needs an owner, status and evidence (Step 5); for appropriateness-to-risk questions that are not about government access; and for Decision 2021/914 **Annex II** TOM text, which `toms-art32` generates from assessed, export-eligible state.
+
+**Status:** reviewed (carried from v1.2) — routing/documentation only; no change to the transfer-qualification gate, the six-step pipeline, country profiles, or the inbound-schema 2.0 delta contract shared with `ropa`. Test suite unchanged.
+
+---
+
 ## [v1.2] — 2026-07-21
 
 The TIA→RoPA delta contract moves to **inbound schema 2.0**. `add` now upserts, determinism moves to an `expected_post_state` precondition, and patch paths are constrained to a declared allowed-path set. Coordinated release with `ropa` v2.14 — the two must move together.
