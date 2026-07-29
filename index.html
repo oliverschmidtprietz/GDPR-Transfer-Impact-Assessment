@@ -812,9 +812,9 @@ body {
     <section class="hero">
         <div class="badges">
             <div class="badge badge--live">LIVE · v1.3 STABLE</div>
-            <div class="badge">BUILD 2026.05.27</div>
+            <div class="badge">BUILD 2026.07.25</div>
             <div class="badge badge--color">CHAPTER V</div>
-            <div class="badge">AGPL-3.0 · 12 EVAL CASES · 89 ASSERTIONS</div>
+            <div class="badge">AGPL-3.0 · 12 EVAL CASES · 92 ASSERTIONS</div>
         </div>
 
         <h1>THIRD-COUNTRY<br>TRANSFERS<br><em>by</em> <span class="hl-accent">SIX-STEP</span><br>METHOD.</h1>
@@ -994,7 +994,7 @@ body {
         <div class="tree-card">
             <pre>tia/
 ├── evals  <span class="comment"># Test cases + assertions</span>
-│   └── evals.json  <span class="comment"># 12 cases, 89 assertions</span>
+│   └── evals.json  <span class="comment"># 12 cases, 92 assertions</span>
 ├── references  <span class="comment"># Reference corpus</span>
 │   ├── country-profiles
 │   │   ├── ae.md
@@ -1019,6 +1019,13 @@ body {
 │   ├── supplementary-measures.md
 │   ├── tia-template.md
 │   └── transfer-qualification.md
+├── tests
+│   ├── fixtures
+│   │   ├── ropa-base-existing-tia.json
+│   │   ├── ropa-base-first-write.json
+│   │   └── tia-result-legacy-invalid.json
+│   ├── README.md  <span class="comment"># Deployment guide</span>
+│   └── test_interchange_contract.py
 ├── CHANGELOG.md  <span class="comment"># Version history</span>
 ├── README.md  <span class="comment"># Deployment guide</span>
 └── SKILL.md  <span class="comment"># Main skill instructions</span></pre>
@@ -1100,7 +1107,7 @@ body {
                 <div class="stat-label">Test Cases</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">89</div>
+                <div class="stat-value">92</div>
                 <div class="stat-label">Assertions</div>
             </div>
             <div class="stat-card">
@@ -1239,6 +1246,9 @@ body {
                 <span class="section-icon">§</span> 10 · README.MD
             </div>
             <div class="readme-content"><h1>TIA (Transfer Impact Assessment) — Deployment Guide</h1>
+<blockquote>
+<p>📄 <strong><a href="https://oliverschmidtprietz.github.io/GDPR-Transfer-Impact-Assessment/">View the interactive skill page →</a></strong></p>
+</blockquote>
 <h2>Overview</h2>
 <p>GDPR Transfer Impact Assessment skill — structured Chapter V transfer guidance for Claude. Combines:</p>
 <ul>
@@ -1387,7 +1397,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 </tr>
 <tr>
 <td>JSON Delta</td>
-<td>RoPA interchange — patches <code>tia_ref</code> and <code>tia_date</code></td>
+<td>Optional RoPA interchange — patches only <code>tia_ref</code> and completed-assessment <code>tia_date</code>; detailed status, review timing, and measures remain in the TIA artifact</td>
 </tr>
 <tr>
 <td>Transfer Risk Summary</td>
@@ -1470,7 +1480,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 <tr>
 <td>RoPA</td>
 <td>Outbound</td>
-<td>Emit delta file per assessed transfer (conforming to RoPA inbound schema v2.0)</td>
+<td>Optionally emit a delta per assessed transfer with <code>tia_ref</code> + completed-assessment <code>tia_date</code> (conforming to RoPA inbound schema v2.0); TIA remains fully standalone</td>
 </tr>
 <tr>
 <td>DPIA Sentinel</td>
