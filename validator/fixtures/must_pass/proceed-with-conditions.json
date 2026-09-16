@@ -1,0 +1,82 @@
+{
+  "tia_schema_version": "1.1",
+  "cover": {
+    "tia_ref": "TIA-US-2026-004",
+    "title": "US transfer — support ticketing platform (conditional)",
+    "org_slug": "acme-gmbh",
+    "assessor": "J. Doe (Privacy Counsel)",
+    "date": "2026-09-15"
+  },
+  "transfer_qualification": {
+    "criterion_1": {"met": true, "note": "Exporter established in DE, Art. 3(1)."},
+    "criterion_2": {"met": true, "note": "Disclosure to a separate US processor."},
+    "criterion_3": {"met": true, "note": "Importer located in the US."},
+    "failing_criterion": null
+  },
+  "step1": {
+    "exporter": "Acme GmbH",
+    "importer": "TicketPeak Inc.",
+    "roles": "controller -> processor",
+    "destination_country": "US",
+    "importer_sector": "customer support SaaS",
+    "data_categories": ["support ticket bodies", "customer contact data"],
+    "data_subjects": ["customers"],
+    "purpose": "customer support ticketing",
+    "volume": "approx. 8000 tickets/year",
+    "frequency": "continuous",
+    "formats": ["TLS-encrypted in transit", "encrypted at rest (importer keys)"],
+    "onward_transfers": {"present": "no", "child_assessment_ref": null}
+  },
+  "step2": {
+    "mechanism": "sccs",
+    "adequacy": null,
+    "art49": null,
+    "dpf_reliance": null
+  },
+  "step3": {
+    "conclusion": "2",
+    "justification": "FISA 702 exposure for a cloud provider handling EU customer data; Block B concerns on redress despite EO 14086.",
+    "block_b_guarantees": {
+      "legality_clarity": "concerns",
+      "necessity_proportionality": "adequate",
+      "oversight": "adequate",
+      "redress": "concerns"
+    }
+  },
+  "step4": {
+    "measures": [
+      {
+        "type": "technical",
+        "addresses_gap": "Importer cannot produce intelligible data under a FISA 702 directive: exporter-held keys.",
+        "implementation_status": "in_progress",
+        "effectiveness": "effective"
+      }
+    ],
+    "overall_effectiveness": "sufficient",
+    "decision": "proceed_with_conditions"
+  },
+  "conditions": [
+    {
+      "id": "C1",
+      "text": "Complete exporter-held key rotation and confirm the importer no longer holds decryption capability.",
+      "status": "open"
+    },
+    {
+      "id": "C2",
+      "text": "Add a challenge-clause side letter to the existing SCCs.",
+      "status": "met",
+      "met_evidence": "Side letter countersigned 2026-09-10, on file.",
+      "met_date": "2026-09-10"
+    }
+  ],
+  "step5_6": {
+    "next_review_date": "2027-03-15",
+    "sign_off": {
+      "assessor": {"name": "J. Doe", "date": "2026-09-15"},
+      "dpo": {"name": "M. Muster", "date": "2026-09-15"}
+    }
+  },
+  "ropa_delta": {"emitted": false, "delta_ref": null},
+  "overrides": [],
+  "validation": {"status": "passed_with_warnings", "findings": []}
+}

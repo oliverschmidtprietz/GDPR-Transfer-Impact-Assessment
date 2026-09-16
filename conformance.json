@@ -1,0 +1,12 @@
+{
+  "conformance_schema_version": "1.1",
+  "skill": "tia",
+  "standard_version": "1.2",
+  "tier": "full",
+  "validator": "validator/validate.py",
+  "artefact_schema": "references/tia-sidecar-schema.json",
+  "sources_lock": "sources.lock.json",
+  "emits_core_artefact": true,
+  "emit_check_input": "validator/fixtures/must_pass/minimal-signed.json",
+  "declared_at": "2026-08-11"
+}

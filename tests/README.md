@@ -10,14 +10,15 @@ The suite needs `pytest` and `jsonschema`. There is no dependency manifest in
 this repo, so the reliable invocation is:
 
 ```bash
-uv run --with pytest --with jsonschema python -m pytest skills/ropa/validator skills/tia/tests -q
+uv run --with pytest --with jsonschema python -m pytest skills/ropa/validator skills/tia/tests skills/toms-art32 -q
 ```
 
 Run from the repository root. A bare `python3 -m pytest` fails with
 `ModuleNotFoundError: No module named 'jsonschema'` unless that package happens
 to be installed in the active environment.
 
-Expected: **127 passed** (100 RoPA validator + 27 interchange contract).
+Expected: **447 passed** (128 RoPA validator + 215 TIA tests, incl. the
+Portfolio Standard validator/adapter/interchange suite + 104 toms-art32).
 
 ## What these tests guard
 

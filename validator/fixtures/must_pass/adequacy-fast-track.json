@@ -1,0 +1,49 @@
+{
+  "tia_schema_version": "1.0",
+  "cover": {
+    "tia_ref": "TIA-UK-2026-002",
+    "title": "UK transfer — CRM hosting",
+    "org_slug": "acme-gmbh",
+    "assessor": "J. Doe (Privacy Counsel)",
+    "date": "2026-08-01"
+  },
+  "transfer_qualification": {
+    "criterion_1": {"met": true, "note": "Exporter established in DE, Art. 3(1)."},
+    "criterion_2": {"met": true, "note": "Disclosure to a separate UK processor."},
+    "criterion_3": {"met": true, "note": "Importer located in the UK."},
+    "failing_criterion": null
+  },
+  "step1": {
+    "exporter": "Acme GmbH",
+    "importer": "CloudCRM Ltd.",
+    "roles": "controller -> processor",
+    "destination_country": "GB",
+    "importer_sector": "CRM SaaS",
+    "data_categories": ["customer contact data", "sales pipeline data"],
+    "data_subjects": ["customers", "prospects"],
+    "purpose": "CRM hosting",
+    "volume": "approx. 50000 records",
+    "frequency": "continuous",
+    "formats": ["TLS-encrypted in transit", "encrypted at rest (importer keys)"],
+    "onward_transfers": {"present": "no", "child_assessment_ref": null}
+  },
+  "step2": {
+    "mechanism": "adequacy",
+    "adequacy": {
+      "decision_ref": "Commission Implementing Decision — UK adequacy, renewed 2025-12-19, valid until 2031-12-27",
+      "conditions": "Scope: general adequacy; monitor renewal.",
+      "review_expiry": "2031-12-27"
+    },
+    "art49": null,
+    "dpf_reliance": null
+  },
+  "step5_6": {
+    "next_review_date": "2027-08-01",
+    "sign_off": {
+      "assessor": {"name": "J. Doe", "date": "2026-08-01"},
+      "dpo": {"name": "M. Muster", "date": "2026-08-02"}
+    }
+  },
+  "ropa_delta": {"emitted": false, "delta_ref": null},
+  "overrides": []
+}

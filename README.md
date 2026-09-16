@@ -22,9 +22,15 @@ skills/tia/
 ├── SKILL.md                              # Main skill instructions (deploy this)
 ├── CHANGELOG.md                          # Version history
 ├── README.md                             # This file
+├── conformance.json                      # Portfolio Standard conformance declaration
+├── sources.lock.json                     # Citation lock (portfolio standard §4)
 ├── evals/
 │   └── evals.json                        # 12 behavioural test cases
+├── validator/                            # Deterministic Python validator (portfolio standard §2)
+│   ├── validate.py                       # CLI entrypoint — findings report + --emit-core-artefact
+│   └── tia_validator/                    # Rule registry, runner, core-artefact adapter
 └── references/
+    ├── tia-sidecar-schema.json           # Native sidecar JSON Schema
     ├── edpb-six-steps.md                 # EDPB Rec 01/2020 methodology
     ├── essential-guarantees.md           # EDPB Rec 02/2020 four-pillar framework
     ├── transfer-qualification.md         # EDPB Guidelines 05/2021 — 3 criteria + 12 examples
@@ -64,6 +70,16 @@ skills/tia/
 # Symlink the skill from the monorepo
 ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 ```
+
+### Deterministic Validator
+
+To run the standalone Python validator over a sidecar (no AI in the loop):
+
+```bash
+uv run skills/tia/validator/validate.py <tia-sidecar.json> --format human
+```
+
+The validator needs the `jsonschema` package; on PEP-668 (externally-managed) systems run it as `uv run --with jsonschema python skills/tia/validator/validate.py …`.
 
 ## Usage
 

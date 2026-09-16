@@ -811,10 +811,10 @@ body {
 
     <section class="hero">
         <div class="badges">
-            <div class="badge badge--live">LIVE · v1.3 STABLE</div>
-            <div class="badge">BUILD 2026.07.25</div>
+            <div class="badge badge--live">LIVE · v1.6 STABLE</div>
+            <div class="badge">BUILD 2026.09.15</div>
             <div class="badge badge--color">CHAPTER V</div>
-            <div class="badge">AGPL-3.0 · 12 EVAL CASES · 92 ASSERTIONS</div>
+            <div class="badge">AGPL-3.0 · 14 EVAL CASES · 106 ASSERTIONS</div>
         </div>
 
         <h1>THIRD-COUNTRY<br>TRANSFERS<br><em>by</em> <span class="hl-accent">SIX-STEP</span><br>METHOD.</h1>
@@ -994,7 +994,7 @@ body {
         <div class="tree-card">
             <pre>tia/
 ├── evals  <span class="comment"># Test cases + assertions</span>
-│   └── evals.json  <span class="comment"># 12 cases, 92 assertions</span>
+│   └── evals.json  <span class="comment"># 14 cases, 106 assertions</span>
 ├── references  <span class="comment"># Reference corpus</span>
 │   ├── country-profiles
 │   │   ├── ae.md
@@ -1017,6 +1017,7 @@ body {
 │   ├── schrems-ii-holdings.md
 │   ├── sources.md
 │   ├── supplementary-measures.md
+│   ├── tia-sidecar-schema.json
 │   ├── tia-template.md
 │   └── transfer-qualification.md
 ├── tests
@@ -1025,10 +1026,34 @@ body {
 │   │   ├── ropa-base-first-write.json
 │   │   └── tia-result-legacy-invalid.json
 │   ├── README.md  <span class="comment"># Deployment guide</span>
-│   └── test_interchange_contract.py
+│   ├── test_interchange_contract.py
+│   ├── test_tia_cli.py
+│   ├── test_tia_core_artefact.py
+│   ├── test_tia_emit_core_artefact.py
+│   ├── test_tia_rules_completeness.py
+│   ├── test_tia_rules_consistency.py
+│   ├── test_tia_rules_freshness.py
+│   ├── test_tia_runner.py
+│   ├── test_tia_sidecar_schema.py
+│   ├── test_tia_sources_lock.py
+│   └── test_tia_two_skill_handoff.py
+├── validator
+│   ├── fixtures
+│   │   ├── must_fail
+│   │   └── must_pass
+│   ├── tia_validator
+│   │   ├── rules
+│   │   ├── __init__.py
+│   │   ├── core_artefact.py
+│   │   ├── findings.py
+│   │   ├── registry.py
+│   │   └── runner.py
+│   └── validate.py
 ├── CHANGELOG.md  <span class="comment"># Version history</span>
 ├── README.md  <span class="comment"># Deployment guide</span>
-└── SKILL.md  <span class="comment"># Main skill instructions</span></pre>
+├── SKILL.md  <span class="comment"># Main skill instructions</span>
+├── conformance.json
+└── sources.lock.json</pre>
         </div>
     </div>
 
@@ -1103,11 +1128,11 @@ body {
     <div class="evals-section">
         <div class="evals-stats">
             <div class="stat-card">
-                <div class="stat-value">12</div>
+                <div class="stat-value">14</div>
                 <div class="stat-label">Test Cases</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">92</div>
+                <div class="stat-value">106</div>
                 <div class="stat-label">Assertions</div>
             </div>
             <div class="stat-card">
@@ -1266,9 +1291,15 @@ body {
 ├── SKILL.md                              # Main skill instructions (deploy this)
 ├── CHANGELOG.md                          # Version history
 ├── README.md                             # This file
+├── conformance.json                      # Portfolio Standard conformance declaration
+├── sources.lock.json                     # Citation lock (portfolio standard §4)
 ├── evals/
 │   └── evals.json                        # 12 behavioural test cases
+├── validator/                            # Deterministic Python validator (portfolio standard §2)
+│   ├── validate.py                       # CLI entrypoint — findings report + --emit-core-artefact
+│   └── tia_validator/                    # Rule registry, runner, core-artefact adapter
 └── references/
+    ├── tia-sidecar-schema.json           # Native sidecar JSON Schema
     ├── edpb-six-steps.md                 # EDPB Rec 01/2020 methodology
     ├── essential-guarantees.md           # EDPB Rec 02/2020 four-pillar framework
     ├── transfer-qualification.md         # EDPB Guidelines 05/2021 — 3 criteria + 12 examples
@@ -1304,6 +1335,11 @@ body {
 <pre><code class="language-bash"># Symlink the skill from the monorepo
 ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
 </code></pre>
+<h3>Deterministic Validator</h3>
+<p>To run the standalone Python validator over a sidecar (no AI in the loop):</p>
+<pre><code class="language-bash">uv run skills/tia/validator/validate.py &lt;tia-sidecar.json&gt; --format human
+</code></pre>
+<p>The validator needs the <code>jsonschema</code> package; on PEP-668 (externally-managed) systems run it as <code>uv run --with jsonschema python skills/tia/validator/validate.py …</code>.</p>
 <h2>Usage</h2>
 <h3>Quick Start</h3>
 <p>Example prompts that trigger the skill:</p>
@@ -1500,7 +1536,7 @@ ln -s ~/CLAUDE_PROJECTS/SKILLS/claude-skills/skills/tia ~/.claude/skills/tia
     </section>
 
     <footer class="page-footer">
-        <span class="footer-text">onezero.legal · /SKILLS/TIA · v1.3</span>
+        <span class="footer-text">onezero.legal · /SKILLS/TIA · v1.6</span>
         <nav class="footer-links">
             <a href="https://onezero.legal">Portfolio</a>
             <a href="#features">Capabilities</a>

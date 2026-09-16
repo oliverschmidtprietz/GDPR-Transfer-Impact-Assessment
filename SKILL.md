@@ -6,7 +6,7 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.3
+  version: 1.6
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill
@@ -36,13 +36,77 @@ Determine what the user needs and lazy-load only the references required:
 
 ## Session Setup
 
-Three quick questions. Adapt if the user provides rich context upfront — extract answers and confirm rather than asking sequentially.
+**Front-door check (before session setup):** if the request carries GDPR
+obligations beyond transfers — it names no single deliverable, spans
+several duties (a new processor also raises Art. 28 DPA checks, a RoPA
+update, possibly a DPIA screen), or asks "what do we need to do" — and
+the `super-gdpr` skill is installed, route the request through
+`super-gdpr` first and continue under its dispatch. If it is not
+installed, name the adjacent obligations you can see, then proceed
+within this skill's scope only.
+
+Three quick questions. If the user provides rich context upfront,
+extract answers and confirm rather than asking sequentially — but only
+for facts actually present in that context; rich context never excuses
+skipping the Required facts below.
 
 1. **Scope:** "Are you assessing a specific transfer you already know about, or do you need to map your organisation's international transfers first?"
 2. **Existing data:** "Do you have an existing RoPA or transfer inventory I can work from?" *(Skip if Scope = specific transfer)*
 3. **Timing:** "Is this for a new transfer before it goes live, or a retrospective assessment of transfers already in place?"
 
-The remaining details — exporter, importer, country, mechanism, data categories — are captured as the natural first step of the assessment pipeline, not as a sterile upfront questionnaire.
+### Required facts — ask, never assume
+
+A required fact you don't have is a **question, never an assumption**.
+Before any Step 2–6 analysis, each of these EDPB Step 1–3 facts must be
+user-confirmed, verified with a receipt, or recorded as an open unknown:
+
+- exporter, importer, and their roles
+- destination country and (candidate) transfer mechanism
+- data categories, data subjects, purpose, volume, frequency, format
+- onward transfers / sub-processors — names and countries, if any
+- encryption in transit and at rest, and **who holds the keys**
+- the importer's government-access track record — transparency report,
+  warrant canary, known requests: ask; if unknown, record it as unknown.
+  Never guess whether such a record exists.
+- **whether an EU/EEA alternative exists** — asked for *every* transfer
+  as part of necessity / less-intrusive means, not only when hinted
+- **special-category content in free-text fields** — ask all three parts:
+  (1) Which free-text or unstructured inputs does the transferred data
+  include (ticket bodies, chat, call notes, comments, uploads,
+  recordings)? (2) Does any control actually prevent or catch
+  special-category content in them (input filtering, redaction, a review
+  step, trained staff with a check)? A policy alone is not a control.
+  (3) Has special-category content (health, religious or philosophical
+  belief, trade-union membership, sex life or orientation, racial or
+  ethnic origin, political opinion, genetic or biometric data, criminal
+  data) ever been observed in them in practice? Rule: if such channels
+  accept input from data subjects or staff and no control catches
+  sensitive content, treat them as potentially containing special-category
+  data in the Step-1 data description and the Step-3/4 risk assessment,
+  recording observed frequency.
+
+Missing item → ask before assessing. The user can't answer → record an
+open unknown (`UNKNOWN — please supply` style) and carry it visibly into
+the report. Never silently invent a plausible answer.
+
+### Epistemic labels
+
+Every factual claim in the report carries its basis: **user-confirmed**
+(reserved for a fact the user literally stated, in answer to a specific
+question — never applied to anything reasoned about, derived, or assumed),
+**verified** (naming the receipt — a document, URL, or tool output
+actually seen this session), **inferred** (derived from other confirmed
+facts, from public knowledge, or by reasonable assumption — e.g. an
+importer's likely size from its public profile, or "not a named PRISM
+participant" from the absence of any such disclosure — named as inferred,
+with the basis stated, in the report), or **assumption** (a working
+premise offered because nothing better is available). Provenance is never
+upgraded: an inferred or assumed fact keeps that label even where it later
+turns out correct; only a fact the user typed in direct answer to a
+question earns user-confirmed. A claim about the world that was not
+verified this session (e.g. "the vendor does not publish a transparency
+report") is written as an open item ("not verified — obtain from vendor"),
+never asserted as researched fact.
 
 ## Workspace Pattern (Batch Assessments)
 
@@ -93,11 +157,11 @@ Reference: `references/edpb-six-steps.md`. Full detail there; SKILL.md captures 
 
 ### Step 1: Know Your Transfer
 
-Capture (from discovery, RoPA import, or direct user input): exporter, importer, country, data categories, subjects, purpose, volume, frequency, data format, onward transfers. Confirm completeness. Flag onward transfers for separate assessment.
+Capture (from discovery, RoPA import, or direct user input): exporter, importer, country, data categories, subjects, purpose, volume, frequency, data format, onward transfers. Confirm completeness against the Required facts list in Session Setup — ask, never assume. Flag onward transfers for separate assessment.
 
 ### Step 2: Identify the Transfer Tool
 
-Document the Chapter V mechanism: adequacy / SCCs (module) / BCRs / ad hoc / code / certification. Note execution dates and SA authorisations as relevant.
+Document the Chapter V mechanism: adequacy / SCCs (module) / BCRs / ad hoc / code / certification. Note execution dates and SA authorisations as relevant. If the mechanism is genuinely not yet determined (e.g. importer domicile still unconfirmed), record `mechanism: unknown` rather than guessing a plausible one — see Sign-off below; it is allowed in a draft but must be resolved before sign-off.
 
 **After identifying the primary mechanism:** Ask "Could any Art. 49 derogation apply as a primary or alternative basis for this transfer?" If yes → also run Art. 49 assessment as parallel/backup path.
 
@@ -135,6 +199,28 @@ Document: measures to implement, owners, due dates, contractual amendments (SCC 
 
 Document: standing triggers (adequacy review dates, DPF fragility), event-driven (new law, SA action, importer government request, certification change), periodic (12-month default, shorter for high-risk). Set the next review date.
 
+### Sign-off: unknown mechanisms and conditional proceed
+
+- **`mechanism: unknown`** is an honest placeholder when the Chapter V
+  basis genuinely isn't determined yet — never guess a plausible mechanism
+  to fill the field. It is allowed in a draft assessment (validator:
+  warning) but **blocks sign-off**: the transfer basis must be documented
+  before Assessor + DPO sign-off (validator: rejection once sign-off is
+  complete).
+- **`decision: proceed_with_conditions`** applies when Step 4 measures are
+  sufficient in principle but not all implemented yet. It requires a
+  recorded `conditions[]` ledger (id, text, status `open`/`met`, and
+  evidence + date once met). The assessment stays **conditional, not
+  complete**, until every condition is recorded `met` with evidence — and
+  per EDPB Recommendations 01/2020 (supplementary measures must be *in
+  place* before the transfer, not merely promised), **the transfer must
+  not start while any condition is open**. A plain `decision: proceed` is
+  only valid once every required supplementary measure has
+  `implementation_status: implemented`; if any measure is still `planned`
+  or `in_progress`, use `proceed_with_conditions` or finish implementing
+  first. Once every condition is met, finalise the decision to `proceed`
+  rather than leaving it at `proceed_with_conditions` indefinitely.
+
 ## Outputs
 
 Four deliverables (the user picks what they need):
@@ -153,6 +239,41 @@ Four deliverables (the user picks what they need):
 **Article 32 handoff (`toms-art32`):** route to the `toms-art32` skill when the work moves off the Chapter V question — an accepted supplementary measure that now needs an owner, an implementation status and evidence (Step 5); a question about whether encryption or pseudonymisation is *appropriate to the risk* generally rather than effective against government access specifically; or the Decision 2021/914 **Annex II** TOM text, which `toms-art32` generates from assessed, export-eligible state. Record the transfer-specific reasoning in the TIA; do not build a control catalogue or effectiveness-testing regime here.
 
 **DPIA trigger:** If Step 3 reveals high-risk processing (Art. 9 special categories + systematic monitoring + third-country risk), flag for the user: "Consider whether a DPIA is required under Art. 35. This transfer's risk profile may meet DPIA threshold criteria." Do NOT auto-trigger DPIA Sentinel — just flag.
+
+## Machine-Readable Artefacts (Portfolio Standard)
+
+Every TIA carries a JSON **assessment-record sidecar** alongside the .docx —
+schema at `references/tia-sidecar-schema.json` (data-format 1.1 — additive
+over 1.0; both `tia_schema_version` values validate). The
+deterministic validator checks documentation completeness and internal
+consistency, never the substantive correctness of a legal conclusion:
+
+```bash
+python validator/validate.py <sidecar.json> [--format json] [--delta <delta.json>] \
+    [--emit-core-artefact <core.json>]
+```
+
+Exit 0 = not blocked, 1 = blocked, 2 = unreadable input. Blocking (rejection)
+rules: SCHEMA-0, TIA-REQUIRED, TQ-CRITERIA, STEP1-COMPLETE, ART49-DOC,
+STEP4-ROWS, SIGNOFF-GATE, MECH-ENUM, STEP3-CONCLUSION, BLOCKB-RATINGS,
+CONCL2-MEASURES, EFFECT-BLOCKS-PROCEED, DELTA-SHAPE. Two rules are
+conditionally blocking: **MECHANISM-UNKNOWN** (`mechanism: unknown` —
+warning while the assessment is a draft, rejection once Assessor + DPO
+sign-off is complete) and **DECISION-CONDITIONS** (rejection for a plain
+`proceed` with any supplementary measure not yet `implemented`, or for
+`proceed_with_conditions` with no recorded `conditions[]`; otherwise a
+non-blocking warning listing open conditions, or suggesting the decision
+be finalised once every condition is `met`). **REVIEW-DATE** is a warning
+rule except for a negative interval — `next_review_date` before
+`cover.date` — which it rejects. Other warning rules: DPF-EVIDENCE,
+SRC-FRESH, ONWARD-CHILD, DELTA-REF-MISSING, SIGNOFF-INDEPENDENCE
+(assessor and DPO sign-off are the same person). A rejection can be
+overridden with a recorded reason in the sidecar's `overrides[]` — EXCEPT the
+sign-off gate (`SIGNOFF-GATE`): no RoPA delta emission without complete
+Assessor + DPO sign-off, ever. `--emit-core-artefact` writes the portfolio
+core artefact (skill-artefact-1.1 schema, `subject.type: "transfer"`) for any
+sibling skill to read as a file — no orchestrator, no Python import.
+Citation currency lives in `sources.lock.json` (checked by rule `SRC-FRESH`).
 
 ## Legal Precision Points
 

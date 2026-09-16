@@ -6,6 +6,116 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.6] — 2026-09-15
+
+Adversarial-review remediation (external Codex review 2026-09-08, triaged
+2026-09-09/10, findings 9–12; author rulings 2026-09-15: R-unknown,
+R-conditions):
+
+- **`REVIEW-DATE` now also rejects a negative interval** —
+  `next_review_date` before `cover.date` (a review scheduled before the
+  assessment it reviews) is a rejection, not merely a warning; the
+  >12-month-without-rationale case stays a warning. (Codex finding 5.)
+- **Malformed `overrides[]` no longer crashes the run.** A top-level
+  `overrides` that is present but not a list (e.g. `overrides: 42`) used
+  to raise `TypeError` before any rule ran; it is now treated as "no
+  valid overrides" and SCHEMA-0 reports the shape violation as a normal
+  finding. (Codex finding 3, tia's share.)
+- **`--emit-core-artefact` falls back to a minimal blocked artefact** if
+  the projection adapter itself raises — a defense-in-depth net; the
+  report on stdout and the exit code are unaffected. (Codex finding 3.)
+- **`step2.mechanism: "unknown"`** (schema + `MECHANISM-UNKNOWN` rule):
+  an honest not-yet-determined transfer basis, instead of a mechanism
+  guessed from an unconfirmed importer domicile. Warning while the
+  assessment is a draft; escalates to a rejection once Assessor + DPO
+  sign-off is complete — the transfer basis must be documented before
+  sign-off (Chapter V). (Finding 11, ruling R-unknown.)
+- **`step4.decision: "proceed_with_conditions"`** (schema + top-level
+  `conditions[]` ledger + `DECISION-CONDITIONS` rule): a decision value
+  and evidenced-conditions ledger for the "proceed, but not every measure
+  is implemented yet" case the schema previously had no honest home for.
+  A plain `proceed` now rejects if any supplementary measure is not
+  `implementation_status: implemented`; `proceed_with_conditions` rejects
+  with no recorded `conditions[]`; open conditions are listed (warning,
+  not a rejection — the assessment is legitimately conditional) until
+  each is recorded `met` with evidence, at which point the finding
+  suggests finalising the decision to `proceed`. The core-artefact
+  projection surfaces the unknown mechanism and every open condition in
+  `unknowns[]`; `outcome.status` stays `provisional` (the standard's
+  closest existing value to "conditional" — its `outcome.status` enum has
+  no dedicated conditional/incomplete value) rather than `complete` while
+  any condition is open. (Finding 12, ruling R-conditions.)
+- **Provenance rule sharpened**: `user-confirmed` is reserved for a fact
+  the user literally stated in answer to a question; anything inferred,
+  derived from public knowledge, or assumed is now a distinct **inferred**
+  epistemic label, stated as such with its basis — never silently
+  upgraded. (Finding 9 — a run defect, not a prior skill defect, but the
+  rule itself was underspecified.)
+- **Step-1 intake — special-category content in free-text fields**: the
+  Required-facts set now always asks (1) which free-text/unstructured
+  inputs are in scope, (2) whether any real control catches
+  special-category content in them (a policy alone is not a control), and
+  (3) whether such content has been observed in practice — with a rule to
+  treat uncontrolled free-text channels as potentially special-category
+  in both the Step-1 data description and the Step-3/4 risk assessment.
+  (Finding 10.)
+- `tia-sidecar-schema.json` moves to data-format **1.1** (additive;
+  `tia_schema_version` accepts both `"1.0"` and `"1.1"`).
+- New fixtures: `must_pass/proceed-with-conditions.json` (a conditional
+  assessment with one open and one met condition) and
+  `must_fail/DECISION-CONDITIONS__proceed-with-planned-measures.json`.
+
+## [v1.5] — 2026-08-29
+
+Ask-don't-guess release (GM-008 journey run 1, friction F-01/F-03/F-05):
+
+- **Required facts — ask, never assume:** the EDPB Step 1–3 fact set
+  (incl. sub-processors, key custody, government-access track record, and
+  the EU/EEA-alternative question for every transfer) must be
+  user-confirmed, verified, or an open unknown before analysis; a missing
+  required fact is a question, never an assumption. The rich-context
+  shortcut now covers only facts actually present in the context.
+- **Epistemic labels:** every report claim is labeled user-confirmed /
+  verified (with receipt) / assumption; unverified world-claims are
+  written as open items, never as researched fact.
+- **`SIGNOFF-INDEPENDENCE`** validator rule (warning): assessor and DPO
+  sign-off by the same person is flagged; never blocks.
+- **Front-door check:** requests broader than transfers route via
+  `super-gdpr` when installed; adjacent obligations are named otherwise.
+- README: PEP-668 note — run the validator via `uv run --with jsonschema`.
+
+## [v1.4] — 2026-08-11
+
+Adopts the Portfolio Standard (v1.2) — first adopter outside the
+ropa/toms-art32 lineage, closing tia's §11 row: **validator,
+sources.lock.json, core-artefact adapter, conformance.json**, plus the
+native assessment-record sidecar those four presuppose
+(`references/tia-sidecar-schema.json`, data-format 1.0).
+
+- 18 registered rules: 16 numbered (blocking = 1–11 + 16 —
+  incomplete/self-contradictory documentation; warnings = 12–15 — rule 12
+  ONWARD-CHILD set to warning by author ruling 2026-08-09; aging rules
+  13–15) plus two unnumbered — SCHEMA-0 (schema conformance, non-overridable)
+  and DELTA-REF-MISSING (the no-reference-no-handoff warning, amendment
+  2026-08-11). OVR-STALE is a runner-emitted finding id, not a registered
+  rule. Documentation-not-correctness throughout.
+- Overrides: any rejection overridable with a recorded reason
+  (`passed_with_override`), refused in code for SIGNOFF-GATE — the frozen
+  v2.0 delta cannot carry an override marker.
+- First emitter of skill-artefact **1.1** (typed subject: `type: "transfer"`,
+  `id` = native `tia_ref`, `org` = required org slug). `sources[]`,
+  `handoffs[]`, `unknowns[]` populated from day one.
+- `sources.lock.json` covers all 22 reference files incl. the 12 country
+  profiles' inline citations (enumerated per entry).
+- The inbound-schema-2.0 delta contract with ropa is untouched; rule 16
+  re-checks only the delta's core shape at point of use.
+- `tests/README.md` expected-count figure corrected (was stale at "127
+  passed").
+- Eval gate: no comparative re-run — machinery, not legal guidance
+  (author ruling 2026-08-09; ropa v2.16 / toms-art32 v1.1 precedent).
+
+---
+
 ## [v1.3] — 2026-07-25
 
 Routes Article 32 security-of-processing work to the `toms-art32` skill. Part of the coordinated **sibling-routing pass** (`ropa` v2.15, `dpia-sentinel` v1.11, `dpa-art28` v1.2, `breach-sentinel` v3.3, `tia` v1.3) that closes the toms-art32 portfolio-integration gate recorded as Finding 1 in `docs/projects/gdpr-skills-marathon/ROADMAP-2026-07-25.md`. Routing pointers only — no Article 32 methodology is duplicated into any sibling.

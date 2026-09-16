@@ -45,10 +45,12 @@ Structured intake table:
 
 | Field | Value |
 |---|---|
-| Primary mechanism | Adequacy / SCCs / BCRs / Ad hoc / Code / Cert / Art. 49 |
+| Primary mechanism | Adequacy / SCCs / BCRs / Ad hoc / Code / Cert / Art. 49 / **Unknown** |
 | Mechanism details | (SCC module + execution date / BCR ref / decision ref) |
 | Fallback mechanism (if any) | (e.g. Art. 49(1)(b) noted alongside SCCs) |
 | Documentation evidence | (signed copies, decision references) |
+
+"Unknown" records an honestly not-yet-determined mechanism (e.g. importer domicile still unconfirmed) — never guess a plausible mechanism to fill this field. It is acceptable in a draft assessment but must be resolved to a real mechanism before Assessor + DPO sign-off (sidecar rule `MECHANISM-UNKNOWN`).
 
 ## Section 3: Third-Country Assessment (EDPB Step 3)
 
@@ -99,7 +101,18 @@ Choose ONE:
 
 (Technical / Contractual / Organisational; Planned / In progress / Implemented; Effective / Partial / Insufficient)
 
-**Overall effectiveness:** ☐ Sufficient → proceed ☐ Insufficient → restructure or suspend
+**Overall effectiveness:** ☐ Sufficient → proceed / proceed with conditions ☐ Insufficient → restructure or suspend
+
+**Decision:** ☐ Proceed ☐ Proceed with conditions ☐ Restructure ☐ Suspend
+
+"Proceed" requires every measure above to be Implemented. If any measure is still Planned or In progress, choose "Proceed with conditions" and complete the conditions ledger below — the transfer must not start while any condition is open (EDPB Recommendations 01/2020: measures must be in place before the transfer, not merely promised).
+
+### Conditions Ledger (only if Decision = Proceed with conditions)
+
+| ID | Condition | Status | Evidence | Met date |
+|---|---|---|---|---|
+
+(Status: Open / Met. The assessment stays conditional — not complete — until every condition is Met with recorded evidence; once all are Met, finalise the Decision to "Proceed".)
 
 ## Section 5: Implementation Action Plan (EDPB Step 5)
 

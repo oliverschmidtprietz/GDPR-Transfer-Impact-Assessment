@@ -1,0 +1,53 @@
+{
+  "tia_schema_version": "1.0",
+  "cover": {
+    "tia_ref": "TIA-IN-2026-003",
+    "title": "India transfer — one-off litigation disclosure",
+    "org_slug": "acme-gmbh",
+    "assessor": "J. Doe (Privacy Counsel)",
+    "date": "2026-08-01"
+  },
+  "transfer_qualification": {
+    "criterion_1": {"met": true, "note": "Exporter established in DE, Art. 3(1)."},
+    "criterion_2": {"met": true, "note": "Disclosure to opposing counsel's Indian correspondent firm."},
+    "criterion_3": {"met": true, "note": "Recipient located in India."},
+    "failing_criterion": null
+  },
+  "step1": {
+    "exporter": "Acme GmbH",
+    "importer": "Correspondent Law Firm LLP",
+    "roles": "controller -> controller",
+    "destination_country": "IN",
+    "importer_sector": "legal services",
+    "data_categories": ["litigation correspondence", "employee witness statements"],
+    "data_subjects": ["employees"],
+    "purpose": "establishment, exercise or defence of legal claims",
+    "volume": "single disclosure, approx. 40 documents",
+    "frequency": "one-off",
+    "formats": ["TLS-encrypted in transit", "encrypted at rest (exporter keys)"],
+    "onward_transfers": {"present": "no", "child_assessment_ref": null}
+  },
+  "step2": {
+    "mechanism": "art49",
+    "adequacy": null,
+    "art49": {
+      "derogation": "49(1)(e)",
+      "primary_or_fallback": "primary",
+      "justification": "Necessary for the establishment, exercise or defence of legal claims in pending Indian proceedings.",
+      "edpb_view_considered": "Yes — Guidelines 2/2018 restrictive reading of occasional/necessity addressed.",
+      "broader_view_considered": "Yes — OLG Muenchen 21 U 3882/25 e considered.",
+      "documentation_evidence": "Litigation hold notice and counsel instruction on file.",
+      "risk_acknowledgement": "Residual SA-challenge risk accepted by DPO 2026-08-01."
+    },
+    "dpf_reliance": null
+  },
+  "step5_6": {
+    "next_review_date": "2027-08-01",
+    "sign_off": {
+      "assessor": {"name": "J. Doe", "date": "2026-08-01"},
+      "dpo": {"name": "M. Muster", "date": "2026-08-02"}
+    }
+  },
+  "ropa_delta": {"emitted": false, "delta_ref": null},
+  "overrides": []
+}

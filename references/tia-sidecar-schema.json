@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/oliverschmidtprietz/claude-skills/skills/tia/references/tia-sidecar-schema.json",
+  "title": "tia assessment-record sidecar 1.1",
+  "description": "Machine-readable core of one Transfer Impact Assessment: the decisions and facts of the six EDPB steps, sized by the validator's rule list (spec 2026-08-09 ruling 1). The .docx per references/tia-template.md remains the human artefact. Required sets follow the severity ruling: a fact whose absence a rejection-tier rule flags is required (or conditionally required via rules 1/4/6/10); warning-tier facts are optional. History: 1.1 (2026-09-15, adversarial review findings 11/12, author rulings R-unknown/R-conditions) adds step2.mechanism 'unknown' (an honest not-yet-determined basis, warning pre-sign-off, rejection at sign-off), step4.decision 'proceed_with_conditions', and the top-level conditions[] ledger tying that decision to tracked, evidenced conditions — additive and backward-compatible with 1.0 documents.",
+  "type": "object",
+  "required": ["tia_schema_version", "cover", "transfer_qualification", "step1", "step2"],
+  "properties": {
+    "tia_schema_version": {"enum": ["1.0", "1.1"]},
+    "cover": {
+      "type": "object",
+      "required": ["tia_ref", "title", "org_slug", "assessor", "date"],
+      "properties": {
+        "tia_ref": {"type": "string", "minLength": 1,
+          "description": "Native, human-composed, stable id — becomes subject.id verbatim (gap-7 Option C)."},
+        "title": {"type": "string", "minLength": 1},
+        "org_slug": {"type": "string", "pattern": "^[a-z0-9-]+$",
+          "description": "Required for tia from day one (ruling 2): a TIA always has a real exporter. The pattern enforces the portfolio slugify convention's RESULT; tia never computes a slug from prose."},
+        "assessor": {"type": "string", "minLength": 1},
+        "date": {"type": "string", "format": "date"}
+      }
+    },
+    "transfer_qualification": {
+      "type": "object",
+      "required": ["criterion_1", "criterion_2", "criterion_3", "failing_criterion"],
+      "properties": {
+        "criterion_1": {"$ref": "#/$defs/Criterion"},
+        "criterion_2": {"$ref": "#/$defs/Criterion"},
+        "criterion_3": {"$ref": "#/$defs/Criterion"},
+        "failing_criterion": {"enum": ["1", "2", "3", null]}
+      }
+    },
+    "step1": {
+      "type": "object",
+      "required": ["exporter", "importer", "roles", "destination_country",
+                   "importer_sector", "data_categories", "data_subjects",
+                   "purpose", "volume", "frequency", "formats", "onward_transfers"],
+      "properties": {
+        "exporter": {"type": "string", "minLength": 1},
+        "importer": {"type": "string", "minLength": 1},
+        "roles": {"type": "string", "minLength": 1},
+        "destination_country": {"type": "string", "minLength": 2},
+        "importer_sector": {"type": "string", "minLength": 1},
+        "data_categories": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "data_subjects": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "purpose": {"type": "string", "minLength": 1},
+        "volume": {"type": "string", "minLength": 1},
+        "frequency": {"type": "string", "minLength": 1},
+        "formats": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "onward_transfers": {
+          "type": "object",
+          "required": ["present"],
+          "properties": {
+            "present": {"enum": ["yes", "no"]},
+            "child_assessment_ref": {"type": ["string", "null"],
+              "description": "Optional: rule 12 (ONWARD-CHILD) is warning-tier by author ruling 2026-08-09."}
+          }
+        }
+      }
+    },
+    "step2": {
+      "type": "object",
+      "required": ["mechanism"],
+      "properties": {
+        "mechanism": {"enum": ["adequacy", "sccs", "bcrs", "ad_hoc", "code_of_conduct", "certification", "art49", "unknown"]},
+        "adequacy": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/AdequacyRecord"}]},
+        "art49": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/Art49Record"}]},
+        "dpf_reliance": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/DpfReliance"}]}
+      }
+    },
+    "step3": {
+      "type": "object",
+      "required": ["conclusion", "justification", "block_b_guarantees"],
+      "properties": {
+        "conclusion": {"enum": ["1", "2", "3"]},
+        "justification": {"type": "string", "minLength": 1},
+        "block_b_guarantees": {
+          "type": "object",
+          "required": ["legality_clarity", "necessity_proportionality", "oversight", "redress"],
+          "properties": {
+            "legality_clarity": {"$ref": "#/$defs/GuaranteeRating"},
+            "necessity_proportionality": {"$ref": "#/$defs/GuaranteeRating"},
+            "oversight": {"$ref": "#/$defs/GuaranteeRating"},
+            "redress": {"$ref": "#/$defs/GuaranteeRating"}
+          }
+        }
+      }
+    },
+    "step4": {
+      "type": "object",
+      "required": ["measures", "overall_effectiveness", "decision"],
+      "properties": {
+        "measures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Measure"}},
+        "overall_effectiveness": {"enum": ["sufficient", "insufficient"]},
+        "decision": {"enum": ["proceed", "restructure", "suspend", "proceed_with_conditions"],
+          "description": "Deliberately split from overall_effectiveness (one combined row at tia-template.md:102) so rule 11 has a real contradiction to check. proceed_with_conditions (1.1) requires a non-empty top-level conditions[] (rule DECISION-CONDITIONS); a plain proceed requires every step4.measures[] row to be implementation_status implemented."}
+      }
+    },
+    "step5_6": {
+      "type": "object",
+      "properties": {
+        "next_review_date": {"type": "string", "format": "date"},
+        "review_interval_rationale": {"type": "string",
+          "description": "Recorded rationale when the review interval exceeds 12 months (rule 14)."},
+        "sign_off": {
+          "type": "object",
+          "properties": {
+            "assessor": {"$ref": "#/$defs/SignOffEntry"},
+            "dpo": {"$ref": "#/$defs/SignOffEntry"}
+          }
+        }
+      }
+    },
+    "ropa_delta": {
+      "type": "object",
+      "required": ["emitted"],
+      "properties": {
+        "emitted": {"type": "boolean"},
+        "delta_ref": {"type": ["string", "null"]}
+      },
+      "description": "Whether the inbound-schema-2.0 delta was emitted (what rule 6 gates). The delta format itself is frozen and untouched (Task 11 deferral)."
+    },
+    "conditions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/Condition"},
+      "description": "The conditions ledger for step4.decision == 'proceed_with_conditions' (1.1, R-conditions): the assessment stays conditional, not complete, until every entry here is recorded 'met'. Not required by decisions other than proceed_with_conditions."
+    },
+    "overrides": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/Override"}
+    },
+    "validation": {
+      "type": "object",
+      "description": "Embedded last-run block. The emit projection replaces it with the LIVE result (standard §2); never trust it from the file."
+    }
+  },
+  "$defs": {
+    "Criterion": {
+      "type": "object",
+      "required": ["met"],
+      "properties": {"met": {"type": "boolean"}, "note": {"type": "string"}}
+    },
+    "GuaranteeRating": {"enum": ["adequate", "concerns", "insufficient"]},
+    "AdequacyRecord": {
+      "type": "object",
+      "required": ["decision_ref"],
+      "properties": {
+        "decision_ref": {"type": "string", "minLength": 1},
+        "conditions": {"type": "string"},
+        "review_expiry": {"type": "string", "format": "date"}
+      }
+    },
+    "Art49Record": {
+      "type": "object",
+      "required": ["derogation", "primary_or_fallback", "justification",
+                   "edpb_view_considered", "broader_view_considered",
+                   "documentation_evidence", "risk_acknowledgement"],
+      "properties": {
+        "derogation": {"type": "string", "minLength": 1},
+        "primary_or_fallback": {"enum": ["primary", "fallback"]},
+        "justification": {"type": "string", "minLength": 1},
+        "edpb_view_considered": {"type": "string", "minLength": 1},
+        "broader_view_considered": {"type": "string", "minLength": 1},
+        "documentation_evidence": {"type": "string", "minLength": 1},
+        "risk_acknowledgement": {"type": "string", "minLength": 1}
+      }
+    },
+    "DpfReliance": {
+      "type": "object",
+      "properties": {
+        "scope_evidence": {"type": "string"},
+        "currency_evidence": {"type": "string"},
+        "verified_at": {"type": "string", "format": "date"}
+      },
+      "description": "All fields optional in the schema: rule 13 (DPF-EVIDENCE) is warning-tier."
+    },
+    "Measure": {
+      "type": "object",
+      "required": ["type", "addresses_gap", "implementation_status", "effectiveness"],
+      "properties": {
+        "type": {"enum": ["technical", "contractual", "organisational"]},
+        "addresses_gap": {"type": "string", "minLength": 1},
+        "implementation_status": {"enum": ["planned", "in_progress", "implemented"]},
+        "effectiveness": {"enum": ["effective", "partial", "insufficient"]}
+      }
+    },
+    "SignOffEntry": {
+      "type": "object",
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "date": {"type": ["string", "null"]}
+      }
+    },
+    "Condition": {
+      "type": "object",
+      "required": ["id", "text", "status"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "status": {"enum": ["open", "met"]},
+        "met_evidence": {"type": "string"},
+        "met_date": {"type": "string", "format": "date"}
+      }
+    },
+    "Override": {
+      "type": "object",
+      "required": ["rule_id", "reason", "recorded_by", "recorded_at"],
+      "properties": {
+        "rule_id": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1},
+        "recorded_by": {"type": "string", "minLength": 1},
+        "recorded_at": {"type": "string", "format": "date"}
+      },
+      "description": "The durable home of the override amendment: every rejection overridable with a recorded reason EXCEPT SIGNOFF-GATE (refused in code, spec §5.2)."
+    }
+  }
+}

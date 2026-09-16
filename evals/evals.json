@@ -188,6 +188,36 @@
         "References transfer-qualification.md Example 12",
         "Does NOT incorrectly classify this as a Chapter V transfer"
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "We're a Dutch e-commerce company using a US-based customer support ticketing platform (not DPF-certified) to handle support requests. The platform stores the full ticket: subject line, our agent's notes, and the customer's free-text message. Customers write in about anything — order issues, but also sometimes complaints, delivery instructions, or just venting. We've never reviewed the ticket bodies in detail. Structured fields (name, email, order ID) are the only thing we usually think about for our RoPA. Walk me through what our TIA needs to cover for this transfer.",
+      "expected_output": "Full TIA required (SCCs to non-DPF US, per us-non-dpf.md). Before Step 3, the skill must ask the three-part free-text question from the Required facts set: (1) what free-text/unstructured inputs are included (here: ticket subject, agent notes, customer message body), (2) whether any real control (input filtering, redaction, a review step, trained staff) actually catches special-category content in that free text — a policy alone is not a control, and (3) whether special-category content (health, religious/philosophical belief, trade-union membership, sex life/orientation, racial/ethnic origin, political opinion, genetic/biometric data, criminal data) has ever actually been observed in the tickets. Because the scenario states ticket bodies accept free-form customer input ('anything ... sometimes complaints ... venting') and no control on the special-category content is described, the skill must NOT wave this through as 'ordinary support correspondence' — it should flag the free-text channel as potentially containing special-category data in the Step-1 data description and carry that into the Step-3/4 risk assessment (e.g. it can affect the data-categories block and whether Art. 9 risk needs separate flagging), recording that frequency/observation is currently unknown rather than asserting the data is benign. The rest of the TIA proceeds as a normal Art. 46 assessment for the US non-DPF platform: FISA 702 / EO 12333 / CLOUD Act analysis, essential guarantees ratings, and supplementary measures if Step 3 concludes (2).",
+      "files": [],
+      "expectations": [
+        "Identifies full TIA required (SCCs to non-DPF US, us-non-dpf.md)",
+        "Explicitly asks or addresses all three parts of the free-text intake question: what free-text fields exist, whether any real control catches special-category content in them, and whether special-category content has been observed in practice",
+        "States plainly that a policy alone is not a control",
+        "Does NOT dismiss the ticket free text as 'ordinary support correspondence' without first checking for a control",
+        "Treats the uncontrolled free-text channel as potentially containing special-category data in the Step-1 data description (and flags it for the Step-3/4 risk assessment) rather than silently excluding it",
+        "Names at least several of the special-category types from Art. 9 as the kind of content that could appear (e.g. health, religious belief, trade-union membership, sexual orientation)",
+        "Still completes the ordinary Art. 46 mechanism analysis for the US non-DPF platform (FISA 702 / EO 12333 / CLOUD Act, essential guarantees)"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "We're mid-way through onboarding a new vendor for order data. We haven't finished KYC on them yet, so we genuinely don't know their corporate domicile or which Chapter V mechanism would even apply — could be a US entity, could be routed through an EU subsidiary, we're not sure yet. Meanwhile, we've drafted seven supplementary measures for the eventual transfer, but so far only two are actually implemented; the rest are still planned for next quarter. Legal wants to record something now rather than wait. What should the TIA record for the transfer mechanism and the decision, and what happens at sign-off?",
+      "expected_output": "Do not guess a mechanism from an unconfirmed domicile. Because the Chapter V mechanism genuinely isn't determined yet, step2.mechanism should be recorded as 'unknown' rather than assumed (e.g. guessing SCCs because the vendor is 'probably' a US entity) — this is allowed in a draft assessment but must be resolved before Assessor + DPO sign-off; the validator warns on 'unknown' pre-sign-off and rejects it once sign-off is complete, because the transfer basis must be documented before sign-off (Chapter V). Separately, on the decision: because five of the seven supplementary measures are still only 'planned' (not yet implemented), a plain decision of 'proceed' would be wrong — implementation_status must be 'implemented' for every measure before a plain 'proceed' is valid. The correct decision to record now is 'proceed_with_conditions', with a conditions[] ledger listing each outstanding item (id, text, status 'open') so they can be tracked and later marked 'met' with evidence and a date. The assessment stays conditional, not complete, until every condition is met, and — per EDPB Recommendations 01/2020 (supplementary measures must be in place before the transfer, not merely promised) — the transfer must not actually begin while any condition is still open. Both the unresolved mechanism and the open conditions should be flagged as open items for legal/DPO visibility, not smoothed over to let the record look more finished than it is.",
+      "files": [],
+      "expectations": [
+        "Recommends recording step2.mechanism as 'unknown' rather than guessing SCCs or any other mechanism from the unconfirmed domicile",
+        "States that 'unknown' is allowed in a draft but must be resolved before Assessor + DPO sign-off",
+        "States that a plain 'proceed' decision is not valid while measures remain 'planned' (not implemented)",
+        "Recommends decision 'proceed_with_conditions' with a conditions[] ledger tracking the outstanding measures (open, to be marked met with evidence)",
+        "States that the transfer must not begin while conditions are open, citing EDPB Recommendations 01/2020 (measures in place before the transfer)",
+        "States the assessment stays conditional/not complete until every condition is recorded met",
+        "Does not let the assessment read as more finished or more certain than the facts support"
+      ]
     }
   ]
 }
