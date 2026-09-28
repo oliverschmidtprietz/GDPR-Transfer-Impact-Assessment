@@ -25,7 +25,7 @@ from .registry import RULES
 
 SKILL_NAME = "tia"
 VALIDATOR_VERSION = "v0.1.0"
-NON_OVERRIDABLE = frozenset({"SIGNOFF-GATE", "SCHEMA-0"})
+NON_OVERRIDABLE = frozenset({"SIGNOFF-GATE", "SCHEMA-0", "DELTA-FILE-REQUIRED", "DELTA-SHAPE"})
 _BLOCKING = {"rejection"}
 
 
@@ -44,6 +44,11 @@ class Context:
     # the CLI is the only caller that must set it explicitly for the
     # delta-parses-to-null edge case.
     delta_provided: bool = False
+    # Filesystem path of the --delta file as given on the CLI (not its parsed
+    # content — that's `delta`). None when --delta was not supplied. Rule 6
+    # (DELTA-FILE-REQUIRED) resolves the sidecar's own ropa_delta.delta_ref
+    # against this to prove the sidecar's claim names the actual file used.
+    delta_path: Optional[Path] = None
     sources_lock_override: Optional[dict] = None   # fixture testing (rule 15)
 
     def __post_init__(self):

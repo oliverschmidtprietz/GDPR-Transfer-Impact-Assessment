@@ -189,7 +189,7 @@ def test_delta_shape_accepts_replace_as_synonym():
     doc = load_fixture("minimal-signed.json")
     delta = _envelope(patches=[
         {"op": "replace", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
-        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-01"}])
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
     assert "DELTA-SHAPE" not in fired(validate(doc, _ctx(delta=delta)))
 
 
@@ -224,6 +224,67 @@ def test_delta_shape_fires_on_op_outside_add_replace():
 def test_delta_shape_is_skipped_without_a_delta():
     doc = load_fixture("minimal-signed.json")
     assert "DELTA-SHAPE" not in fired(validate(doc, _ctx()))
+
+
+def test_delta_shape_fires_on_three_patches():
+    doc = load_fixture("minimal-signed.json")
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"},
+        {"op": "add", "path": "/transfers/1/tia_ref", "value": "TIA-US-2026-002"}])
+    assert "DELTA-SHAPE" in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_fires_on_one_patch():
+    doc = load_fixture("minimal-signed.json")
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"}])
+    assert "DELTA-SHAPE" in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_fires_on_two_different_transfer_indexes():
+    doc = load_fixture("minimal-signed.json")
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/1/tia_date", "value": "2026-08-02"}])
+    assert "DELTA-SHAPE" in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_fires_on_tia_ref_mismatch_with_cover():
+    doc = load_fixture("minimal-signed.json")
+    assert doc["cover"]["tia_ref"] == "TIA-US-2026-001"
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-WRONG-REF"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    assert "DELTA-SHAPE" in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_fires_on_tia_date_mismatch_with_signoff_date():
+    doc = load_fixture("minimal-signed.json")
+    assert doc["step5_6"]["sign_off"]["dpo"]["date"] == "2026-08-02"
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2099-01-01"}])
+    assert "DELTA-SHAPE" in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_passes_on_matching_ref_and_signoff_date():
+    doc = load_fixture("minimal-signed.json")
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    assert "DELTA-SHAPE" not in fired(validate(doc, _ctx(delta=delta)))
+
+
+def test_delta_shape_is_non_overridable():
+    doc = load_fixture("minimal-signed.json")
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "WRONG"}])
+    doc["overrides"] = [{"rule_id": "DELTA-SHAPE", "reason": "trust me",
+                         "recorded_by": "assessor", "recorded_at": "2026-08-02"}]
+    result = validate(doc, _ctx(delta=delta))
+    assert result.status == "failed"
+    assert any(f.rule_id == "OVR-REFUSED" for f in result.findings)
 
 
 # ---------------------------------------------------------------------------
@@ -354,22 +415,153 @@ def test_decision_conditions_tolerates_malformed_conditions_entries():
 
 
 # ---------------------------------------------------------------------------
-# DELTA-REF-MISSING
+# DELTA-FILE-REQUIRED
 # ---------------------------------------------------------------------------
 
-def test_delta_ref_missing_warns_but_does_not_gate():
-    doc = load_fixture("minimal-signed.json")          # sign-off complete
-    doc["ropa_delta"] = {"emitted": True, "delta_ref": None}
-    result = validate(doc, _ctx())
-    f = next(f for f in result.findings if f.rule_id == "DELTA-REF-MISSING")
-    assert f.severity == "warning"
-    assert result.status == "passed_with_warnings"
-
-
-def test_delta_ref_missing_does_not_fire_when_not_emitted():
-    # Must-not-fire that would catch an over-broad predicate: a rule that
-    # merely checked "delta_ref empty" (ignoring "emitted") would wrongly
-    # fire on the fixture's default {"emitted": false, "delta_ref": null}.
+def test_delta_file_required_does_not_fire_when_not_emitted():
     doc = load_fixture("minimal-signed.json")
     assert doc["ropa_delta"] == {"emitted": False, "delta_ref": None}
-    assert "DELTA-REF-MISSING" not in fired(validate(doc, _ctx()))
+    assert "DELTA-FILE-REQUIRED" not in fired(validate(doc, _ctx()))
+
+
+def test_delta_file_required_fires_when_emitted_but_no_delta_supplied():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    result = validate(doc, _ctx())   # no delta= kwarg at all
+    f = next(f for f in result.findings if f.rule_id == "DELTA-FILE-REQUIRED")
+    assert f.severity == "rejection"
+    assert result.status == "failed"
+
+
+def test_delta_file_required_fires_on_prose_delta_ref():
+    doc = load_fixture("minimal-signed.json")
+    prose_ref = "sign-off and RoPA update happened together, no separate file was queued"
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": prose_ref}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES.parent / "some-other-delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" in fired(result)
+    assert result.status == "failed"
+    f = next(f for f in result.findings if f.rule_id == "DELTA-FILE-REQUIRED")
+    # The claimed ref must appear exactly once in the message (not once raw
+    # and once more baked into a nonsense resolved path), and the message
+    # must say plainly what delta_ref is for.
+    assert f.message.count(prose_ref) == 1
+    assert "must be the path of the emitted hand-over file, not a description" in f.message
+
+
+def test_delta_file_required_truncates_a_long_prose_delta_ref():
+    doc = load_fixture("minimal-signed.json")
+    long_prose = "x" * 200
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": long_prose}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES.parent / "some-other-delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    f = next(f for f in result.findings if f.rule_id == "DELTA-FILE-REQUIRED")
+    assert long_prose not in f.message   # the full 200-char ref must not appear verbatim
+    assert "…" in f.message         # truncated with an ellipsis instead
+
+
+def test_delta_file_required_fires_when_delta_ref_names_a_different_file():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "not-the-real-delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta, delta_path=FIXTURES / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" in fired(result)
+
+
+def test_delta_file_required_passes_when_delta_ref_resolves_to_the_supplied_file():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta, delta_path=FIXTURES / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" not in fired(result)
+
+
+def test_delta_file_required_passes_when_delta_ref_is_pre_move_and_delta_is_in_applied():
+    # ropa's documented merge workflow moves the applied file from
+    # <inbound>/X.delta.json to <inbound>/applied/X.delta.json (run-4 defect:
+    # the sidecar's delta_ref still names the pre-move path afterwards).
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES / "applied" / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" not in fired(result)
+
+
+def test_delta_file_required_passes_when_delta_ref_already_in_applied_and_delta_is_pre_move():
+    # Symmetric case: delta_ref was updated to the post-move location but
+    # --delta was (re-)run against the original pre-move path.
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "applied/delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" not in fired(result)
+
+
+def test_delta_file_required_rejects_a_different_filename_inside_applied():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES / "applied" / "different-name.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" in fired(result)
+
+
+def test_delta_file_required_rejects_a_sibling_dir_other_than_applied():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta,
+                                 delta_path=FIXTURES / "archive" / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    assert "DELTA-FILE-REQUIRED" in fired(result)
+
+
+def test_delta_file_required_message_mentions_the_applied_tray():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "not-the-real-delta.json"}
+    delta = _envelope(patches=[
+        {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+        {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"}])
+    result = validate(doc, _ctx(delta=delta, delta_path=FIXTURES / "delta.json",
+                                 artefact_path=str(FIXTURES / "minimal-signed.json")))
+    f = next(f for f in result.findings if f.rule_id == "DELTA-FILE-REQUIRED")
+    assert "applied" in f.message.lower()
+    # the original wording must still be present verbatim (existing contract)
+    assert "must be the path of the emitted hand-over file, not a description of one." in f.message
+
+
+def test_delta_file_required_is_non_overridable():
+    doc = load_fixture("minimal-signed.json")
+    doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}
+    doc["overrides"] = [{"rule_id": "DELTA-FILE-REQUIRED", "reason": "trust me",
+                         "recorded_by": "assessor", "recorded_at": "2026-08-02"}]
+    result = validate(doc, _ctx())   # still no --delta supplied
+    assert result.status == "failed"
+    assert any(f.rule_id == "OVR-REFUSED" for f in result.findings)

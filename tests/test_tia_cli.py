@@ -95,8 +95,10 @@ def test_valid_sidecar_and_valid_delta_exits_0(tmp_path):
         "source_skill": "tia",
         "produced_at": "2026-08-01T00:00:00Z",
         "target_activity_id": "act-001",
-        "patches": [{"op": "add", "path": "/transfers/0/tia_ref",
-                     "value": "TIA-US-2026-001"}],
+        "patches": [
+            {"op": "add", "path": "/transfers/0/tia_ref", "value": "TIA-US-2026-001"},
+            {"op": "add", "path": "/transfers/0/tia_date", "value": "2026-08-02"},
+        ],
     }), encoding="utf-8")
     proc = run_cli(FIXTURE, "--delta", delta, "--format", "json")
     assert proc.returncode == 0, proc.stdout + proc.stderr
@@ -205,3 +207,14 @@ def test_skill_version_is_read_live_from_skill_md():
     line = next(l for l in skill_md.splitlines()
                 if l.strip().startswith("version:"))
     assert reported == line.split(":", 1)[1].strip()   # no literal — survives the v1.4 bump
+
+
+def test_validate_py_declares_its_own_dependencies():
+    """F-12: validate.py must carry a PEP 723 inline-metadata header so
+    `uv run skills/tia/validator/validate.py` works with zero prior setup,
+    the way ropa's validate.py already does (skills/ropa/validator/validate.py:1-5)."""
+    header = VALIDATE.read_text(encoding="utf-8").splitlines()[:6]
+    assert header[0] == "#!/usr/bin/env -S uv run --script"
+    assert header[1] == "# /// script"
+    assert any("jsonschema" in line for line in header)
+    assert "# ///" in header

@@ -14,11 +14,11 @@ diverges from both in two ways design spec §6 calls out explicitly:
    rather than inherit the gap.
 
 `handoffs[]` names `ropa` only when `ropa_delta.emitted` is true AND
-`delta_ref` is a non-empty string (amendment 2026-08-11): an emission claim
-without a reference is never advertised as a handoff — it already surfaces
-as the DELTA-REF-MISSING warning, which the projection carries in gaps[]
-via the live validation.findings[] block. "Parcel sent" needs a parcel
-reference.
+`delta_ref` is a non-empty string (amendment 2026-08-11, tightened
+2026-09-18): an emission claim without a resolvable reference is never
+advertised as a handoff — it is now a DELTA-FILE-REQUIRED rejection
+(non-overridable), which the projection carries in gaps[] via the live
+validation.findings[] block. "Parcel sent" needs a parcel reference.
 
 The core artefact is always writable, even when the document is blocked
 (spec §5.3) — a `blocked` artefact is itself a legitimate handoff signal.

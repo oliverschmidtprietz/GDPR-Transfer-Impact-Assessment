@@ -15,7 +15,7 @@
   },
   "step1": {
     "exporter": "Acme GmbH",
-    "importer": "TicketPeak Inc.",
+    "importer": "HelpHarbor Inc.",
     "roles": "controller -> processor",
     "destination_country": "US",
     "importer_sector": "customer support SaaS",

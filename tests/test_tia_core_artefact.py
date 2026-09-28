@@ -181,7 +181,7 @@ def test_handoffs_empty_when_not_emitted():
 
 def test_handoffs_empty_when_emitted_true_but_delta_ref_null():
     # The amendment: an emission claim with no reference is never advertised
-    # as a handoff — it surfaces as DELTA-REF-MISSING instead.
+    # as a handoff — it is now a DELTA-FILE-REQUIRED rejection instead.
     sidecar = _base_sidecar()
     sidecar["ropa_delta"] = {"emitted": True, "delta_ref": None}
     artefact = to_core_artefact(sidecar, skill_version="1.4")
@@ -318,8 +318,8 @@ def test_gaps_one_entry_per_finding_with_fix_hint_when_present():
     sidecar["validation"] = {
         "status": "passed_with_warnings",
         "findings": [
-            {"rule_id": "DELTA-REF-MISSING", "category": "consistency",
-             "severity": "warning", "message": "ropa_delta.emitted is true "
+            {"rule_id": "DELTA-FILE-REQUIRED", "category": "interchange",
+             "severity": "rejection", "message": "ropa_delta.emitted is true "
              "but delta_ref is missing", "spec_anchor": "x"},
             {"rule_id": "ONWARD-CHILD", "category": "consistency",
              "severity": "warning", "message": "no child assessment ref",
@@ -328,7 +328,7 @@ def test_gaps_one_entry_per_finding_with_fix_hint_when_present():
     }
     artefact = to_core_artefact(sidecar, skill_version="1.4")
     assert artefact["gaps"] == [
-        {"id": "DELTA-REF-MISSING", "severity": "warning",
+        {"id": "DELTA-FILE-REQUIRED", "severity": "rejection",
          "message": "ropa_delta.emitted is true but delta_ref is missing"},
         {"id": "ONWARD-CHILD", "severity": "warning",
          "message": "no child assessment ref",

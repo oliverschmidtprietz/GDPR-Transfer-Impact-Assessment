@@ -6,7 +6,7 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.6
+  version: 1.7
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill
@@ -227,14 +227,14 @@ Four deliverables (the user picks what they need):
 
 1. **Markdown TIA Report** — in-session preview. Sections mirror Steps 1–6.
 2. **.docx Formal TIA Document** — for the compliance file. Uses `references/tia-template.md` structure with CNIL-style tables, cover page, sign-off block (assessor + DPO), annex with country profile summary.
-3. **JSON Interchange Sidecar** — optional delta file conforming to `interchange-inbound-schema.json` **v2.0**. Patches only `tia_ref` and `tia_date`, where `tia_date` is the completed assessment date. Emit `add` for both leaves — `add` upserts, so there is no first-write/later-write distinction and no need to read RoPA's current values. Declare an `expected_post_state` precondition; a mismatch rejects the whole delta. TIA status, next-review date, and supplementary-measure detail remain in the TIA artifact and human-readable delta context — those paths are outside RoPA's allowed-path set and emitting them rejects the delta. When requested, the delta lands in `skills/ropa-workspace/<org-slug>/inbound/`. See `references/interchange-delta.md`.
+3. **JSON Interchange Sidecar** — delta file conforming to `interchange-inbound-schema.json` **v2.0**, mandatory whenever `ropa_delta.emitted` is set true (DELTA-FILE-REQUIRED, non-overridable — a claimed emission with no real, resolvable delta file blocks validation). Patches only `tia_ref` and `tia_date`, where `tia_date` is the TIA's completion date (`step5_6.sign_off.dpo.date`) and `tia_ref` matches `cover.tia_ref` exactly (DELTA-SHAPE, non-overridable). Emit `add` for both leaves — `add` upserts, so there is no first-write/later-write distinction and no need to read RoPA's current values. Declare an `expected_post_state` precondition; a mismatch rejects the whole delta. TIA status, next-review date, and supplementary-measure detail remain in the TIA artifact and human-readable delta context — those paths are outside RoPA's allowed-path set and emitting them rejects the delta. When requested, the delta lands in `skills/ropa-workspace/<org-slug>/inbound/`. See `references/interchange-delta.md`.
 4. **Transfer Risk Summary** — one-page executive overview for batch assessments. Per-transfer row: destination, mechanism, verdict, key risk, measures. No numerical scores.
 
 ## Cross-Skill Integration
 
 **Inbound from RoPA:** Read sidecar (`<org-slug>-ropa-sidecar.json`) → filter entries with third-country transfers → pre-populate Step 1 → track `activity_id` UUIDs.
 
-**Outbound to RoPA (optional):** When the user wants to return results to a RoPA, emit one delta file per assessed transfer (see Output #3). A TIA remains complete and usable without this exchange. The delta is owned by RoPA after writing.
+**Outbound to RoPA (optional):** When the user wants to return results to a RoPA, emit one delta file per assessed transfer (see Output #3) — a TIA remains complete and usable without this exchange, but once `ropa_delta.emitted` is set true, the delta becomes mandatory and non-overridable (DELTA-FILE-REQUIRED, DELTA-SHAPE). The delta is owned by RoPA after writing.
 
 **Article 32 handoff (`toms-art32`):** route to the `toms-art32` skill when the work moves off the Chapter V question — an accepted supplementary measure that now needs an owner, an implementation status and evidence (Step 5); a question about whether encryption or pseudonymisation is *appropriate to the risk* generally rather than effective against government access specifically; or the Decision 2021/914 **Annex II** TOM text, which `toms-art32` generates from assessed, export-eligible state. Record the transfer-specific reasoning in the TIA; do not build a control catalogue or effectiveness-testing regime here.
 
@@ -249,14 +249,14 @@ deterministic validator checks documentation completeness and internal
 consistency, never the substantive correctness of a legal conclusion:
 
 ```bash
-python validator/validate.py <sidecar.json> [--format json] [--delta <delta.json>] \
+uv run skills/tia/validator/validate.py <sidecar.json> [--format json] [--delta <delta.json>] \
     [--emit-core-artefact <core.json>]
 ```
 
 Exit 0 = not blocked, 1 = blocked, 2 = unreadable input. Blocking (rejection)
 rules: SCHEMA-0, TIA-REQUIRED, TQ-CRITERIA, STEP1-COMPLETE, ART49-DOC,
 STEP4-ROWS, SIGNOFF-GATE, MECH-ENUM, STEP3-CONCLUSION, BLOCKB-RATINGS,
-CONCL2-MEASURES, EFFECT-BLOCKS-PROCEED, DELTA-SHAPE. Two rules are
+CONCL2-MEASURES, EFFECT-BLOCKS-PROCEED, DELTA-SHAPE, DELTA-FILE-REQUIRED. Two rules are
 conditionally blocking: **MECHANISM-UNKNOWN** (`mechanism: unknown` —
 warning while the assessment is a draft, rejection once Assessor + DPO
 sign-off is complete) and **DECISION-CONDITIONS** (rejection for a plain
@@ -266,11 +266,16 @@ non-blocking warning listing open conditions, or suggesting the decision
 be finalised once every condition is `met`). **REVIEW-DATE** is a warning
 rule except for a negative interval — `next_review_date` before
 `cover.date` — which it rejects. Other warning rules: DPF-EVIDENCE,
-SRC-FRESH, ONWARD-CHILD, DELTA-REF-MISSING, SIGNOFF-INDEPENDENCE
+SRC-FRESH, ONWARD-CHILD, SIGNOFF-INDEPENDENCE
 (assessor and DPO sign-off are the same person). A rejection can be
-overridden with a recorded reason in the sidecar's `overrides[]` — EXCEPT the
-sign-off gate (`SIGNOFF-GATE`): no RoPA delta emission without complete
-Assessor + DPO sign-off, ever. `--emit-core-artefact` writes the portfolio
+overridden with a recorded reason in the sidecar's `overrides[]` — EXCEPT
+`SIGNOFF-GATE` (no RoPA delta emission without complete Assessor + DPO
+sign-off, ever), `DELTA-FILE-REQUIRED` (the delta file itself must be real
+and named correctly — tolerating ropa's own documented move of the file
+into an `applied/` tray, same filename only), and `DELTA-SHAPE` (its two
+patches must be exactly right) — none of the three interchange gates can
+be talked around.
+`--emit-core-artefact` writes the portfolio
 core artefact (skill-artefact-1.1 schema, `subject.type: "transfer"`) for any
 sibling skill to read as a file — no orchestrator, no Python import.
 Citation currency lives in `sources.lock.json` (checked by rule `SRC-FRESH`).

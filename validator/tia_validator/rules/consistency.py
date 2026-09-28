@@ -1,7 +1,8 @@
 """Enum and consistency rules 7-12 and 16 (MECH-ENUM, STEP3-CONCLUSION,
 BLOCKB-RATINGS, CONCL2-MEASURES, EFFECT-BLOCKS-PROCEED, ONWARD-CHILD,
-DELTA-SHAPE) plus the DELTA-REF-MISSING warning (amendment 2026-08-11) —
-spec §5.1 rows 7-12/16.
+DELTA-SHAPE) plus the non-overridable DELTA-FILE-REQUIRED rejection
+(amendment 2026-09-18, replacing the warning-only DELTA-REF-MISSING from
+2026-08-11) — spec §5.1 rows 7-12/16.
 
 Documentation-not-correctness still applies: these rules check that the
 sidecar's own fields agree with each other (or with a fixed enum), never
@@ -20,6 +21,7 @@ repo's interchange contract tests never run. It must NOT re-assert the full
 acceptance check — that stays ropa's job (interchange-inbound-schema.json:7).
 """
 import re
+from pathlib import Path
 
 from ..findings import Finding
 from ..registry import rule
@@ -32,7 +34,6 @@ _SPEC_CONCL2 = "references/tia-template.md#section-4"
 _SPEC_EFFECT = "references/tia-template.md#section-4"
 _SPEC_ONWARD = "SKILL.md#legal-precision-points"
 _SPEC_DELTA_SHAPE = "references/interchange-delta.md#canonical-ropa-fields-and-write-semantics"
-_SPEC_DELTA_REF = "references/interchange-delta.md#producer-side-responsibilities"
 _SPEC_MECHANISM_UNKNOWN = "SKILL.md#legal-precision-points"
 _SPEC_DECISION_CONDITIONS = "references/tia-template.md#section-4"
 
@@ -42,7 +43,7 @@ _CONCLUSIONS = {"1", "2", "3"}
 _BLOCKB_KEYS = ("legality_clarity", "necessity_proportionality",
                 "oversight", "redress")
 _BLOCKB_RATINGS = {"adequate", "concerns", "insufficient"}
-_DELTA_PATH_RE = re.compile(r"^/transfers/[0-9]+/(tia_ref|tia_date)$")
+_DELTA_PATH_RE = re.compile(r"^/transfers/(?P<idx>[0-9]+)/(?P<leaf>tia_ref|tia_date)$")
 _DELTA_OPS = {"add", "replace"}
 
 
@@ -343,7 +344,8 @@ def delta_shape(sidecar, ctx):
                 entry_id=str(idx)))
             continue
         path = patch.get("path")
-        if not isinstance(path, str) or not _DELTA_PATH_RE.match(path):
+        path_match = _DELTA_PATH_RE.match(path) if isinstance(path, str) else None
+        if not path_match:
             findings.append(Finding(
                 rule_id="DELTA-SHAPE", category="interchange", severity="rejection",
                 message=f"delta.patches[{idx}].path {path!r} is not "
@@ -357,20 +359,137 @@ def delta_shape(sidecar, ctx):
                         "not 'add' or 'replace'.",
                 spec_anchor=_SPEC_DELTA_SHAPE, entry_type="patch",
                 entry_id=str(idx), field="op"))
+
+    if findings:
+        # A per-patch shape violation already fired above — the exactly-two/
+        # one-index/value checks below assume well-formed patches and would
+        # produce confusing secondary findings on top of an already-broken
+        # shape, so stop here (round 2 pattern: one clear reason per input).
+        return findings
+
+    if len(patches) != 2:
+        return findings + [Finding(
+            rule_id="DELTA-SHAPE", category="interchange", severity="rejection",
+            message=f"delta.patches has {len(patches)} entries; a TIA delta "
+                    "carries exactly two (tia_ref and tia_date for one "
+                    "transfer).",
+            spec_anchor=_SPEC_DELTA_SHAPE, field="patches")]
+
+    by_leaf = {}
+    indexes = set()
+    for patch in patches:
+        m = _DELTA_PATH_RE.match(patch["path"])
+        indexes.add(m.group("idx"))
+        by_leaf[m.group("leaf")] = patch.get("value")
+
+    if len(indexes) != 1 or set(by_leaf) != {"tia_ref", "tia_date"}:
+        return [Finding(
+            rule_id="DELTA-SHAPE", category="interchange", severity="rejection",
+            message="delta.patches must target exactly one transfer index "
+                    "with exactly one tia_ref patch and one tia_date patch.",
+            spec_anchor=_SPEC_DELTA_SHAPE, field="patches")]
+
+    cover = sidecar.get("cover") if isinstance(sidecar, dict) else None
+    cover = cover if isinstance(cover, dict) else {}
+    if by_leaf.get("tia_ref") != cover.get("tia_ref"):
+        findings.append(Finding(
+            rule_id="DELTA-SHAPE", category="interchange", severity="rejection",
+            message=f"delta's tia_ref patch value {by_leaf.get('tia_ref')!r} "
+                    f"does not match this TIA's cover.tia_ref "
+                    f"{cover.get('tia_ref')!r}.",
+            spec_anchor=_SPEC_DELTA_SHAPE, field="tia_ref"))
+
+    step5_6 = sidecar.get("step5_6") if isinstance(sidecar, dict) else None
+    step5_6 = step5_6 if isinstance(step5_6, dict) else {}
+    sign_off = step5_6.get("sign_off") if isinstance(step5_6.get("sign_off"), dict) else {}
+    dpo = sign_off.get("dpo") if isinstance(sign_off.get("dpo"), dict) else {}
+    completion_date = dpo.get("date")
+    if by_leaf.get("tia_date") != completion_date:
+        findings.append(Finding(
+            rule_id="DELTA-SHAPE", category="interchange", severity="rejection",
+            message=f"delta's tia_date patch value {by_leaf.get('tia_date')!r} "
+                    "does not match this TIA's completion date "
+                    f"(step5_6.sign_off.dpo.date, {completion_date!r}).",
+            spec_anchor=_SPEC_DELTA_SHAPE, field="tia_date"))
+
     return findings
 
 
-@rule(id="DELTA-REF-MISSING", severity="warning", category="consistency",
-      description="ropa_delta.emitted is true but delta_ref is missing or "
-                  "empty — an emission claim pointing at no file.",
-      spec_anchor=_SPEC_DELTA_REF)
-def delta_ref_missing(sidecar, ctx):
+_SPEC_DELTA_FILE_REQUIRED = "references/interchange-delta.md#producer-side-responsibilities"
+
+
+@rule(id="DELTA-FILE-REQUIRED", severity="rejection", category="interchange",
+      description="ropa_delta.emitted is true ⇒ a real --delta file must be "
+                  "supplied and the sidecar's own delta_ref must resolve, "
+                  "relative to the sidecar's directory, to that same file. "
+                  "Non-overridable — replaces the warning-only DELTA-REF-MISSING "
+                  "(amendment 2026-09-18, author decision (A)).",
+      spec_anchor=_SPEC_DELTA_FILE_REQUIRED)
+def delta_file_required(sidecar, ctx):
     ropa_delta = sidecar.get("ropa_delta") if isinstance(sidecar, dict) else None
     ropa_delta = ropa_delta if isinstance(ropa_delta, dict) else {}
-    if ropa_delta.get("emitted") is True and not _non_empty_str(ropa_delta.get("delta_ref")):
+    if ropa_delta.get("emitted") is not True:
+        return []
+
+    if not ctx.delta_provided or ctx.delta_path is None:
         return [Finding(
-            rule_id="DELTA-REF-MISSING", category="consistency", severity="warning",
-            message="ropa_delta.emitted is true but delta_ref is missing "
-                    "or empty.",
-            spec_anchor=_SPEC_DELTA_REF, field="delta_ref")]
+            rule_id="DELTA-FILE-REQUIRED", category="interchange", severity="rejection",
+            message="ropa_delta.emitted is true but no --delta file was "
+                    "supplied to this validation run. The delta file is "
+                    "mandatory whenever an emission is claimed.",
+            spec_anchor=_SPEC_DELTA_FILE_REQUIRED, field="delta_ref")]
+
+    delta_ref = ropa_delta.get("delta_ref")
+    if not _non_empty_str(delta_ref):
+        return [Finding(
+            rule_id="DELTA-FILE-REQUIRED", category="interchange", severity="rejection",
+            message="ropa_delta.emitted is true but delta_ref is missing or "
+                    "empty — it must name the emitted delta file.",
+            spec_anchor=_SPEC_DELTA_FILE_REQUIRED, field="delta_ref")]
+
+    try:
+        sidecar_dir = Path(ctx.artefact_path).resolve().parent
+        resolved_ref = (sidecar_dir / delta_ref).resolve()
+        resolved_delta = Path(ctx.delta_path).resolve()
+    except (OSError, ValueError, TypeError):
+        return [Finding(
+            rule_id="DELTA-FILE-REQUIRED", category="interchange", severity="rejection",
+            message=f"ropa_delta.delta_ref {delta_ref!r} could not be resolved "
+                    "as a filesystem path.",
+            spec_anchor=_SPEC_DELTA_FILE_REQUIRED, field="delta_ref")]
+
+    if resolved_ref != resolved_delta and not _tolerates_applied_move(resolved_ref, resolved_delta):
+        display_ref = delta_ref if len(delta_ref) <= 80 else delta_ref[:80] + "…"
+        return [Finding(
+            rule_id="DELTA-FILE-REQUIRED", category="interchange", severity="rejection",
+            message=f"ropa_delta.delta_ref ({display_ref!r}) does not resolve to "
+                    f"the --delta file actually supplied to this run "
+                    f"({resolved_delta}). delta_ref must be the path of the "
+                    "emitted hand-over file, not a description of one. (ropa's "
+                    "documented merge moves the file into an `applied/` tray "
+                    "under the same directory — that moved location is "
+                    "tolerated, same filename only.)",
+            spec_anchor=_SPEC_DELTA_FILE_REQUIRED, field="delta_ref")]
+
     return []
+
+
+def _tolerates_applied_move(resolved_ref: Path, resolved_delta: Path) -> bool:
+    """True when the only difference between the sidecar's recorded
+    delta_ref and the --delta path actually supplied is ropa's own
+    documented move of the file into an `applied/` tray alongside it
+    (run-4 defect: the sidecar's delta_ref goes stale the moment ropa does
+    exactly what it's documented to do). Same filename only — a different
+    filename, or a sibling directory other than `applied/`, still rejects."""
+    if resolved_ref.name != resolved_delta.name:
+        return False
+    # delta_ref is the pre-move path; --delta was supplied post-move.
+    if (resolved_delta.parent.name == "applied"
+            and resolved_delta.parent.parent == resolved_ref.parent):
+        return True
+    # Symmetric: delta_ref already points into applied/; --delta is the
+    # pre-move path (e.g. a re-run against the original location).
+    if (resolved_ref.parent.name == "applied"
+            and resolved_ref.parent.parent == resolved_delta.parent):
+        return True
+    return False

@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["jsonschema>=4.21"]
+# ///
 """tia validator CLI — portfolio standard §2 interface.
 
 Exit codes: 0 = not blocked, 1 = blocked, 2 = unreadable/malformed input.
@@ -109,8 +113,10 @@ def main(argv=None):
     p.add_argument("--references-dir", type=Path, default=DEFAULT_REFS)
     p.add_argument("--delta", type=Path, default=None,
                    help="Emitted interchange delta file for rules 6 and 16. "
-                        "Without it, rule 16 does not evaluate and rule 6 "
-                        "evaluates from the sidecar's ropa_delta claim alone.")
+                        "Required (rule 6, DELTA-FILE-REQUIRED, non-overridable) "
+                        "whenever ropa_delta.emitted is true — the sidecar's "
+                        "delta_ref must also resolve to this same file. Without "
+                        "it, rule 16 (DELTA-SHAPE) does not evaluate.")
     p.add_argument(
         "--emit-core-artefact", type=Path, default=None, metavar="PATH",
         help=("After validation, write the portfolio core artefact "
@@ -129,7 +135,8 @@ def main(argv=None):
                   mode=args.mode,
                   artefact_path=str(args.sidecar),
                   delta=delta,
-                  delta_provided=args.delta is not None)
+                  delta_provided=args.delta is not None,
+                  delta_path=args.delta)
     result = validate(sidecar, ctx)
 
     if args.emit_core_artefact is not None:

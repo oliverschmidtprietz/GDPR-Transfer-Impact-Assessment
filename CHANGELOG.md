@@ -6,6 +6,22 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.7] — 2026-09-18
+
+Author decision (A), 2026-09-18, after Codex consultation (`docs/projects/gdpr-skills-marathon/CODEX-CONSULTATION-2026-09-18-answer.md` §Q1): the tia→ropa hand-over delta file becomes MANDATORY, enforced in code, closing F-13 (the interchange delta contract had never been exercised end to end across three journey runs).
+
+- **`DELTA-FILE-REQUIRED` (rejection, non-overridable) replaces `DELTA-REF-MISSING` (warning).** `ropa_delta.emitted: true` now requires a real `--delta` file to be supplied to the validator AND the sidecar's own `delta_ref` to resolve, relative to the sidecar's directory (or as-is if absolute), to that exact file. A prose `delta_ref` ("no separate file was queued...") or one naming a different file is now a hard rejection, not a warning. The mismatch message was also tidied so a long prose `delta_ref` is echoed once (truncated with an ellipsis past ~80 chars), not doubled into a nonsense resolved path.
+- **`DELTA-SHAPE` strengthened and made non-overridable.** Now requires exactly two patches targeting exactly one transfer index, with the `tia_ref` patch value matching `cover.tia_ref` and the `tia_date` patch value matching `step5_6.sign_off.dpo.date` (the TIA's completion date — the field chosen as the single unambiguous "completed assessment date," since the sidecar has no field literally named that).
+- **F-12 fixed.** `validator/validate.py` gained the PEP 723 inline-metadata launcher header ropa's already had — `uv run skills/tia/validator/validate.py ...` now works with zero prior `pip install` steps.
+- Docs synced: `SKILL.md`'s Outputs and Cross-Skill Integration sections state the mandatory contract; `references/interchange-delta.md`'s Producer-Side Responsibilities gained an explicit statement of the mandatory, non-overridable contract, plus a clarification of how `delta_ref` resolves and which sidecar field `tia_date` comes from.
+
+See `docs/superpowers/plans/2026-09-18-mandatory-delta-handoff.md` for the full implementation plan and `docs/projects/gdpr-skills-marathon/NEXT-SESSION.md` ("Session of 18 September 2026 (session 2)") for the decision record.
+
+**2026-09-24 — journey run 4 fix wave (`docs/projects/gdpr-skills-marathon/journeys/transfer-review/JUDGMENT-RUN-4.md`), author decisions, small fix wave, no version bump:**
+
+- **`DELTA-FILE-REQUIRED` now tolerates ropa's own documented `applied/` move.** ropa's merge mode moves a successfully-applied delta from `<inbound>/X.delta.json` to `<inbound>/applied/X.delta.json`; the sidecar's `delta_ref` recorded at emission time necessarily still names the pre-move path afterwards, and the rule was rejecting that genuine, correctly-completed hand-over (run-4 defect: independently reproduced against the clean room's real, final `inbound/applied/` file — rejected before this fix). The rule now also passes when `--delta` resolves to `<delta_ref's directory>/applied/<same filename>`, or, symmetrically, when `delta_ref` already names the `applied/` location and `--delta` is re-run against the original pre-move path. A different filename, or any other sibling directory, still rejects. `references/interchange-delta.md` and `SKILL.md` updated to describe the tolerance; no separate instruction to edit `delta_ref` after the move ever existed, so none needed removing.
+- **`source_skill` version-stamping made explicit.** A live run-4 emission wrote `source_skill: "tia v1.1"` while the running skill was v1.7 — a stale literal that propagated verbatim into RoPA's `transfers_provenance.source`. `references/interchange-delta.md`'s Producer-Side Responsibilities gained an explicit numbered step: the version in `"tia v<X.Y>"` is read from this skill's own `SKILL.md` frontmatter `version:` at emission time, never hardcoded or copied from a historical mention elsewhere in the same document. No Python emitter exists for this delta (it is producer-instructed, not code-generated), so there was no mechanical stamping to add; confirmed ropa's `TRANS-TIA-DELTA` rule and inbound schema do not themselves pin any tia version.
+
 ## [v1.6] — 2026-09-15
 
 Adversarial-review remediation (external Codex review 2026-09-08, triaged
