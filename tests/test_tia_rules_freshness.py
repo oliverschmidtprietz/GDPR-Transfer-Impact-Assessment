@@ -77,6 +77,40 @@ def test_dpf_evidence_does_not_fire_when_dpf_reliance_is_null():
     assert "DPF-EVIDENCE" not in fired(validate(doc, _ctx(sources_lock_override=_fresh_manifest())))
 
 
+def test_dpf_evidence_fires_on_adequacy_us_with_no_dpf_block():
+    # Break-it 2026-10-02 probe2: "mechanism: adequacy" + destination_country
+    # "US" + dpf_reliance: null used to short-circuit silently — the EU has
+    # no general US adequacy decision, only the DPF for certified recipients,
+    # so an "adequacy" claim for the US with no dpf_reliance block at all is
+    # a bare, unevidenced claim and must fire exactly like an empty one.
+    doc = load_fixture("adequacy-fast-track.json")
+    doc["step1"]["destination_country"] = "US"
+    doc["step2"]["dpf_reliance"] = None
+    result = validate(doc, _ctx(sources_lock_override=_fresh_manifest()))
+    f = next(f for f in result.findings if f.rule_id == "DPF-EVIDENCE")
+    assert f.severity == "warning"
+
+
+def test_dpf_evidence_does_not_fire_on_adequacy_for_a_non_us_country():
+    # Must-not-fire: a real Art. 45 adequacy decision (e.g. UK) needs no DPF
+    # evidence block at all — only the US "adequacy" special case does.
+    doc = load_fixture("adequacy-fast-track.json")
+    assert doc["step1"]["destination_country"] == "GB"
+    assert doc["step2"]["dpf_reliance"] is None
+    assert "DPF-EVIDENCE" not in fired(validate(doc, _ctx(sources_lock_override=_fresh_manifest())))
+
+
+def test_dpf_evidence_does_not_fire_on_us_with_a_non_adequacy_mechanism():
+    # Must-not-fire: the short-circuit fix is scoped to mechanism=="adequacy";
+    # a plain SCCs transfer to the US with no DPF reliance is not making an
+    # adequacy claim at all.
+    doc = load_fixture("minimal-signed.json")
+    assert doc["step1"]["destination_country"] == "US"
+    assert doc["step2"]["mechanism"] == "sccs"
+    assert doc["step2"]["dpf_reliance"] is None
+    assert "DPF-EVIDENCE" not in fired(validate(doc, _ctx(sources_lock_override=_fresh_manifest())))
+
+
 # ---------------------------------------------------------------------------
 # REVIEW-DATE
 # ---------------------------------------------------------------------------

@@ -6,6 +6,77 @@ Format: `## [vX.Y] — YYYY-MM-DD`
 
 ---
 
+## [v1.8] — 2026-10-02
+
+Break-it test 2026-10-02 fix wave (adversarial probe pass against the
+shipped v1.7 validator; `LEDGER.md`'s tia lines). Seven findings: one
+cross-cutting crash, two validator holes, and four legal-content/instruction
+issues.
+
+- **`_load_json` now catches `UnicodeDecodeError` (exit 2).** A sidecar
+  containing invalid UTF-8 bytes raised an uncaught `UnicodeDecodeError`
+  from `path.read_text()` — a raw traceback on stderr and exit 1 (colliding
+  with "blocked"), even though `SKILL.md`/`validate.py` document exit 2 for
+  unreadable input. `UnicodeDecodeError` is a `ValueError` subclass, not an
+  `OSError`, so it slipped past the existing guard.
+- **New rule `DEST-CRITERION3` (rejection).** `step1.destination_country`
+  being an EU/EEA state (fixed EU27 + IS/LI/NO list, matched
+  case-insensitively against the ISO alpha-2 codes already used throughout
+  the sidecar/fixtures) while `transfer_qualification.criterion_3.met` is
+  `true` is a direct self-contradiction — criterion 3 requires the importer
+  to be in a *third* country.
+- **`DPF-EVIDENCE` short-circuit fixed.** Previously only checked
+  `dpf_reliance` when it was present, so `mechanism: adequacy` with
+  `destination_country: US` and `dpf_reliance: null` passed silently — but
+  the EU has no general US adequacy decision, only the Data Privacy
+  Framework for certified recipients. The rule now also fires (warning) on
+  that specific combination even when the `dpf_reliance` block is entirely
+  absent.
+- **New rule `SIGNOFF-DATE-PLAUSIBILITY` (rejection).**
+  `step5_6.sign_off.{assessor,dpo}.date` must not precede `cover.date`
+  (sign-off cannot predate the assessment it signs off) and must not be
+  more than 730 days after it (implausibly far in the future — e.g. a
+  typo'd year). Unlike `REVIEW-DATE`'s forward interval, there is no
+  rationale field that could make an extreme sign-off date legitimate, so
+  both directions reject rather than warn.
+- **Legal correction: Art. 5/24/32 "remain mandatory" is criterion-specific,
+  not universal.** `SKILL.md` and `references/transfer-qualification.md`
+  previously said Art. 5/24/32 "remain mandatory" whenever *any* transfer-
+  qualification criterion fails. Verified against EDPB Guidelines 05/2021
+  v2.0 Section 4 (full PDF fetched and checked): that passage presupposes
+  the exporter is still subject to the GDPR under Art. 3 (i.e. criterion 1
+  is met) — it only addresses criterion 2/3 failures (e.g. an employee
+  travelling abroad, or Art. 3(2) direct collection). When criterion 1
+  itself fails, the GDPR does not apply to that processing at all, so
+  Art. 5/24/32 are not "mandatory" by virtue of it. Both files now state
+  the criterion-specific consequence explicitly.
+- **New Step 2 check: SCC vintage.** `SKILL.md` and
+  `references/edpb-six-steps.md` now require confirming that any SCCs
+  relied on are the 2021 set (Commission Implementing Decision (EU)
+  2021/914 of 4 June 2021). Verified against the decision's Art. 4: the
+  earlier sets (Decision 2001/497/EC, Decision 2010/87/EU) were repealed
+  with effect from 27 September 2021, and contracts executed on them could
+  be relied on only until 27 December 2022 — after that date they provide
+  no safeguard at all. A contract still citing an old set, or with no
+  execution date on file, is now an explicit open-unknown trigger, not an
+  assumed-current mechanism.
+- **New anti-pressure instruction.** `SKILL.md`'s Required Facts section
+  now explicitly states that a request to skip Required facts, or to
+  declare a transfer compliant without running the assessment, is
+  declined — the deliverable becomes "not assessed — required facts
+  withheld" with the gap recorded as an open unknown, regardless of
+  urgency or seniority cited.
+- **Disclaimer clarified.** `SKILL.md` and `README.md` now state plainly
+  that a passing validator run means the sidecar is internally consistent
+  and complete, not that the underlying legal analysis is correct.
+- `sources.lock.json`: `references/transfer-qualification.md` and
+  `references/edpb-six-steps.md` entries re-verified 2026-10-02 (see notes
+  for the primary-source checks performed).
+- Test suite: 233 → 248 tests (15 new: 1 CLI crash-fix test, 11 new
+  `DEST-CRITERION3`/`SIGNOFF-DATE-PLAUSIBILITY` consistency-rule tests, 3
+  new `DPF-EVIDENCE` tests — see `tests/test_tia_cli.py`,
+  `tests/test_tia_rules_consistency.py`, `tests/test_tia_rules_freshness.py`).
+
 ## [v1.7] — 2026-09-18
 
 Author decision (A), 2026-09-18, after Codex consultation (`docs/projects/gdpr-skills-marathon/CODEX-CONSULTATION-2026-09-18-answer.md` §Q1): the tia→ropa hand-over delta file becomes MANDATORY, enforced in code, closing F-13 (the interchange delta contract had never been exercised end to end across three journey runs).

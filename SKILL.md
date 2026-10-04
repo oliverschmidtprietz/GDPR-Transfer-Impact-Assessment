@@ -6,14 +6,14 @@ description: |
 metadata:
   author: Oliver Schmidt-Prietz
   license: AGPL-3.0
-  version: 1.7
+  version: 1.8
 ---
 
 # GDPR Transfer Impact Assessment (TIA) Skill
 
 ## Disclaimer (show at session start, do not block)
 
-> **Important:** This skill provides structured GDPR Chapter V transfer assessment guidance based on EDPB Recommendations, CNIL guidance, CJEU case law, and emerging national case law (OLG München 21 U 3882/25 e). It is not legal advice. Involve your DPO and qualified counsel for final decisions, especially where the skill flags a transfer for suspension or restructuring.
+> **Important:** This skill provides structured GDPR Chapter V transfer assessment guidance based on EDPB Recommendations, CNIL guidance, CJEU case law, and emerging national case law (OLG München 21 U 3882/25 e). It is not legal advice. Involve your DPO and qualified counsel for final decisions, especially where the skill flags a transfer for suspension or restructuring. A passing run of the deterministic validator (`validator/validate.py`) means the sidecar is internally consistent and complete against its own schema and rules — it is **not** a check that the underlying legal analysis or conclusion is correct.
 
 ## Routing
 
@@ -89,6 +89,14 @@ Missing item → ask before assessing. The user can't answer → record an
 open unknown (`UNKNOWN — please supply` style) and carry it visibly into
 the report. Never silently invent a plausible answer.
 
+**Anti-pressure:** If the user asks to skip Required facts, or to declare a
+transfer compliant / fine / low-risk without running the assessment,
+decline. Explain which fact(s) are missing and why they're required, and
+offer only "not assessed — required facts withheld" as the deliverable,
+recording the gap as an open unknown. Never produce a compliance verdict
+unsupported by the facts actually gathered, regardless of urgency,
+seniority, or deadline pressure cited by the requester.
+
 ### Epistemic labels
 
 Every factual claim in the report carries its basis: **user-confirmed**
@@ -140,7 +148,15 @@ All three met → Chapter V applies → continue to the TIA requirement check.
 Any criterion fails → output a **Transfer Qualification Finding** documenting:
 - Which criterion failed and why.
 - That Chapter V does not apply to this processing.
-- That Art. 5/24/32 safeguards remain mandatory (per Section 4 of the guidelines).
+- **Criterion 1 failed:** the exporter is not subject to the GDPR for this
+  processing at all (Art. 3 does not apply) — Art. 5/24/32 are not engaged
+  by virtue of *this* processing either; say so plainly rather than
+  asserting they "remain mandatory". (A different processing by the same
+  entity may independently trigger the GDPR — that is a separate question.)
+- **Criterion 2 or 3 failed:** the exporter remains subject to the GDPR
+  under Art. 3 for this processing (criterion 1 is met), so Chapter V's
+  inapplicability does not relax the rest of the Regulation — Art. 5, 24
+  and 32 safeguards remain mandatory, per Section 4 of the guidelines.
 - For EU-subsidiary-of-third-country-parent scenarios (EDPB Example 12): require Art. 28 due diligence on the processor's exposure to extraterritorial law.
 
 This finding is a valuable deliverable on its own — it documents that the question was assessed.
@@ -162,6 +178,8 @@ Capture (from discovery, RoPA import, or direct user input): exporter, importer,
 ### Step 2: Identify the Transfer Tool
 
 Document the Chapter V mechanism: adequacy / SCCs (module) / BCRs / ad hoc / code / certification. Note execution dates and SA authorisations as relevant. If the mechanism is genuinely not yet determined (e.g. importer domicile still unconfirmed), record `mechanism: unknown` rather than guessing a plausible one — see Sign-off below; it is allowed in a draft but must be resolved before sign-off.
+
+**SCC vintage check (mandatory when mechanism = sccs):** confirm the clauses are the 2021 set (Commission Implementing Decision (EU) 2021/914 of 4 June 2021). The earlier sets (Decision 2001/497/EC, Decision 2010/87/EU) were repealed from 27 September 2021 and could not be relied on for any transfer from 27 December 2022 onward (Art. 4 of the 2021 Decision). No execution date on file, or a contract still citing an old set, is an open unknown to record — never assume the clauses were updated.
 
 **After identifying the primary mechanism:** Ask "Could any Art. 49 derogation apply as a primary or alternative basis for this transfer?" If yes → also run Art. 49 assessment as parallel/backup path.
 
@@ -286,7 +304,7 @@ These are areas where Claude's training knowledge may be imprecise. Always apply
 
 1. **A TIA is only required for Art. 46 transfers.** Adequacy (Art. 45) and Art. 49 derogations do not require a TIA — but each needs its own documentation (adequacy: decision ref + conditions; Art. 49: justification + applicable sub-provision).
 
-2. **"Transfer" has no legal definition in the GDPR.** EDPB Guidelines 05/2021 define three cumulative criteria. Direct collection from data subject ≠ transfer (Example 1). Remote access from third country by processor = transfer (Example 11). Employee on business trip accessing own employer's data ≠ transfer (Example 8).
+2. **"Transfer" has no legal definition in the GDPR.** EDPB Guidelines 05/2021 define three cumulative criteria. Direct collection from data subject ≠ transfer (Example 1). Remote access from third country by processor = transfer (Example 11). Employee on business trip accessing own employer's data ≠ transfer (Example 8). When a criterion fails, what else still applies depends on *which* one: if criterion 1 fails, the GDPR does not govern this processing at all (Art. 5/24/32 are simply not engaged by it); if criterion 2 or 3 fails, the exporter remains subject to the GDPR under Art. 3 (criterion 1 is met), so Art. 5/24/32 do stay mandatory per Guidelines 05/2021 Section 4 — see `transfer-qualification.md`.
 
 3. **Onward transfers need separate assessment.** Each hop in the chain (controller → processor → sub-processor in third country) is a separate transfer under Chapter V and requires its own analysis.
 
@@ -313,6 +331,8 @@ These are areas where Claude's training knowledge may be imprecise. Always apply
 14. **A TIA must be done BEFORE the transfer begins.** Per Schrems II and EDPB Recommendations 01/2020, the assessment is a pre-condition for an Art. 46 transfer. Retrospective TIAs for existing transfers are common in practice but represent a compliance gap; document the gap and close it.
 
 15. **Re-assessment is not optional.** Art. 46 mechanisms require ongoing monitoring. Legislative changes (new surveillance law), case law (Schrems III when it lands), SA enforcement actions in the recipient country, importer's receipt of a government access request, and political developments (DPF rescission risk) all trigger re-evaluation. Default periodic review: 12 months.
+
+16. **Pre-2021 SCCs are not a valid mechanism any more, full stop.** Decision 2001/497/EC and Decision 2010/87/EU were repealed with effect from 27 September 2021; contracts executed on them could be relied on only until 27 December 2022 (Commission Implementing Decision (EU) 2021/914, Art. 4). There is no "grandfathering" past that date — any SCCs relied on today must be the 2021 modules 1–4 set. Always confirm the vintage at Step 2; do not assume a contract described only as "our SCCs" is current.
 
 ## References
 

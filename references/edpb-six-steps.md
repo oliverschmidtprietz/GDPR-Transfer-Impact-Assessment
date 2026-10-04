@@ -30,7 +30,7 @@ Which Chapter V mechanism is being relied on?
 - **Art. 46 — Appropriate safeguards.** Full TIA required.
   - 46(2)(a): legally binding instrument between public authorities
   - 46(2)(b): Binding Corporate Rules (BCR-C or BCR-P)
-  - 46(2)(c): Standard Contractual Clauses (SCCs) — 2021 modules 1–4
+  - 46(2)(c): Standard Contractual Clauses (SCCs) — 2021 modules 1–4. **Vintage check:** confirm the clauses are the 2021 set (Commission Implementing Decision (EU) 2021/914 of 4 June 2021). The earlier sets (Decision 2001/497/EC, Decision 2010/87/EU) were repealed with effect from 27 September 2021 and, under Art. 4 of the 2021 Decision, contracts executed on them could be relied on only until **27 December 2022** — after that date they no longer provide appropriate safeguards under Art. 46(1), full stop. A contract still citing the old sets (or with no execution date recorded at all) is not a valid mechanism record; flag it as an open unknown for renewal, never assume the clauses were updated.
   - 46(2)(d): SA-approved SCCs
   - 46(2)(e): approved code of conduct
   - 46(2)(f): approved certification mechanism

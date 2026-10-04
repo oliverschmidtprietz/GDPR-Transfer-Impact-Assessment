@@ -46,6 +46,20 @@ def test_malformed_json_exits_2(tmp_path):
     assert run_cli(p).returncode == 2
 
 
+def test_invalid_utf8_sidecar_exits_2_not_1(tmp_path):
+    # Break-it 2026-10-02 probe14: a sidecar containing an invalid UTF-8 byte
+    # sequence raised an uncaught UnicodeDecodeError inside _load_json's
+    # read_text() call — a raw traceback on stderr and exit 1 (colliding with
+    # "blocked"), despite SKILL.md:256 documenting exit 2 for unreadable
+    # input. Must fail closed exactly like a missing file or malformed JSON.
+    p = tmp_path / "bad-utf8.json"
+    p.write_bytes(b'{"tia_schema_version": "1.0", "cover": {"tia_ref": "X\xff\xfe"}}')
+    proc = run_cli(p)
+    assert proc.returncode == 2, proc.stderr
+    assert "Traceback" not in proc.stderr
+    assert proc.stderr.strip() != ""
+
+
 def test_malformed_delta_exits_2(tmp_path):
     bad = tmp_path / "delta.json"
     bad.write_text("{not json", encoding="utf-8")

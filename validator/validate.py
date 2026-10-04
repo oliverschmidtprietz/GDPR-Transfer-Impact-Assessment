@@ -94,7 +94,13 @@ def _load_json(path: Path, what: str, *, require_object: bool = True):
     except FileNotFoundError:
         print(f"Error: {what} not found: {path}", file=sys.stderr)
         raise SystemExit(2)
-    except (OSError, json.JSONDecodeError, RecursionError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, RecursionError) as exc:
+        # UnicodeDecodeError (break-it 2026-10-02, probe14): path.read_text()
+        # raises it directly on invalid UTF-8 bytes, before json.loads() ever
+        # runs. It is a ValueError subclass, not an OSError, so it fell
+        # through this guard uncaught — a raw traceback on stderr and exit 1
+        # (colliding with "blocked"), despite SKILL.md:256 documenting exit 2
+        # for exactly this case (unreadable/malformed input).
         print(f"Error: {what} unreadable/malformed: {exc}", file=sys.stderr)
         raise SystemExit(2)
     if require_object and not isinstance(parsed, dict):

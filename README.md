@@ -157,7 +157,7 @@ See [CHANGELOG.md](CHANGELOG.md) for full version history.
 
 AGPL-3.0. See repository LICENSE.
 
-**This skill provides structured GDPR Chapter V guidance based on EDPB Recommendations, CNIL guidance, and emerging case law. It is not legal advice. Involve your DPO and qualified counsel for final decisions, especially where the skill flags a transfer for suspension or restructuring. The skill's country profiles reflect the law and practice as of the "Last verified" date stated in each profile — verify current status before formal use.**
+**This skill provides structured GDPR Chapter V guidance based on EDPB Recommendations, CNIL guidance, and emerging case law. It is not legal advice. Involve your DPO and qualified counsel for final decisions, especially where the skill flags a transfer for suspension or restructuring. The skill's country profiles reflect the law and practice as of the "Last verified" date stated in each profile — verify current status before formal use. A passing run of the deterministic validator means the sidecar is internally consistent and complete — it is not a check that the underlying legal analysis is correct.**
 
 ---
 

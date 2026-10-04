@@ -15,10 +15,10 @@
       "source_type": "ai-drafted",
       "jurisdiction": "EU",
       "url": "https://www.edpb.europa.eu/our-work-tools/our-documents/recommendations/recommendations-012020-measures-supplement-transfer_en",
-      "last_verified": "2026-08-11",
+      "last_verified": "2026-10-02",
       "confidence": "high",
       "owner": "oliverschmidtprietz",
-      "notes": "EDPB Recommendations 01/2020 v2.0 (adopted 18 June 2021) — the six-step methodology; title and version confirmed live at lock-build time."
+      "notes": "EDPB Recommendations 01/2020 v2.0 (adopted 18 June 2021) — the six-step methodology; title and version confirmed live at lock-build time (2026-08-11). Break-it fix 2026-10-02: Step 2's SCC bullet gained an explicit vintage check against Commission Implementing Decision (EU) 2021/914 of 4 June 2021 (EUR-Lex, eli/dec_impl/2021/914/oj/eng — fetched via a mirrored copy at informationssikkerhed.ku.dk since EUR-Lex itself serves no extractable text to automated fetch); Art. 4(2)-(4) confirmed verbatim: Decisions 2001/497/EC and 2010/87/EU repealed with effect from 27 September 2021, contracts on the old sets deemed valid only until 27 December 2022."
     },
     "references/essential-guarantees.md": {
       "source_type": "ai-drafted",
@@ -78,10 +78,10 @@
       "source_type": "ai-drafted",
       "jurisdiction": "EU",
       "url": "https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-052021-interplay-between-application-article-3_en",
-      "last_verified": "2026-08-11",
+      "last_verified": "2026-10-02",
       "confidence": "high",
       "owner": "oliverschmidtprietz",
-      "notes": "EDPB Guidelines 05/2021 v2.0 on the interplay between Art. 3 and Chapter V — title and scope confirmed live at lock-build time. The fetched page summary read the final-version adoption date as 24 February 2023, versus this file's/sources.md's recorded 14 February 2023 (a 10-day discrepancy, likely a page-rendering artifact); not re-verified against the primary PDF, and not corrected here since editing sources.md's content is out of scope for this task."
+      "notes": "EDPB Guidelines 05/2021 v2.0 on the interplay between Art. 3 and Chapter V — title and scope confirmed live at lock-build time (2026-08-11). The fetched page summary read the final-version adoption date as 24 February 2023, versus this file's/sources.md's recorded 14 February 2023 (a 10-day discrepancy, likely a page-rendering artifact); not re-verified against the primary PDF, and not corrected here since editing sources.md's content is out of scope for this task. Break-it fix 2026-10-02: fetched the full PDF (edpb.europa.eu/system/files/2023-02/edpb_guidelines_05-2021_..._v2_en_0.pdf, converted via pdftotext) and confirmed Section 4's 'safeguards still apply' passage is framed around same-entity/criterion-2 scenarios (an employee travelling abroad, or Art. 3(2) direct collection — both presuppose Art. 3/criterion 1 is already met); it does not address a criterion-1 failure, where the GDPR does not apply to the processing at all. 'Art. 5/24/32 remain mandatory' was corrected in this file (and in SKILL.md) to apply only when criterion 1 is met but criterion 2 or 3 fails."
     },
     "references/country-profiles/ae.md": {
       "source_type": "ai-drafted",

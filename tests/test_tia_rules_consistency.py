@@ -557,6 +557,105 @@ def test_delta_file_required_message_mentions_the_applied_tray():
     assert "must be the path of the emitted hand-over file, not a description of one." in f.message
 
 
+# ---------------------------------------------------------------------------
+# DEST-CRITERION3 (break-it 2026-10-02, probe1: EU destination contradicts a
+# met criterion 3, which requires the importer to be in a THIRD country)
+# ---------------------------------------------------------------------------
+
+def test_dest_criterion3_fires_when_destination_is_an_eu_member_state():
+    doc = load_fixture("minimal-signed.json")
+    doc["step1"]["destination_country"] = "DE"
+    assert doc["transfer_qualification"]["criterion_3"]["met"] is True
+    result = validate(doc, _ctx())
+    assert "DEST-CRITERION3" in fired(result)
+    assert result.status == "failed"
+
+
+def test_dest_criterion3_fires_on_an_eea_efta_state_too():
+    # The fixed list is EU27 + IS/LI/NO (EEA), not just the 27 member states.
+    doc = load_fixture("minimal-signed.json")
+    doc["step1"]["destination_country"] = "NO"
+    assert "DEST-CRITERION3" in fired(validate(doc, _ctx()))
+
+
+def test_dest_criterion3_is_case_insensitive():
+    doc = load_fixture("minimal-signed.json")
+    doc["step1"]["destination_country"] = "de"
+    assert "DEST-CRITERION3" in fired(validate(doc, _ctx()))
+
+
+def test_dest_criterion3_does_not_fire_for_a_genuine_third_country():
+    # Must-not-fire: the fixture's own destination (US) is correctly a third
+    # country alongside a met criterion 3 — no contradiction.
+    doc = load_fixture("minimal-signed.json")
+    assert doc["step1"]["destination_country"] == "US"
+    assert "DEST-CRITERION3" not in fired(validate(doc, _ctx()))
+
+
+def test_dest_criterion3_does_not_fire_when_criterion3_is_not_met():
+    # An EU destination with criterion_3.met == False is consistent (no
+    # contradiction) — only a *met* criterion 3 paired with an EU/EEA
+    # destination is self-contradictory.
+    doc = load_fixture("minimal-signed.json")
+    doc["step1"]["destination_country"] = "DE"
+    doc["transfer_qualification"]["criterion_3"] = {"met": False, "note": "x"}
+    doc["transfer_qualification"]["failing_criterion"] = "3"
+    assert "DEST-CRITERION3" not in fired(validate(doc, _ctx()))
+
+
+def test_dest_criterion3_tolerates_malformed_input():
+    doc = load_fixture("minimal-signed.json")
+    doc["step1"] = "not-a-dict"
+    doc["transfer_qualification"] = None
+    result = validate(doc, _ctx())   # must not raise
+    assert "DEST-CRITERION3" not in fired(result)
+
+
+# ---------------------------------------------------------------------------
+# SIGNOFF-DATE-PLAUSIBILITY (break-it 2026-10-02, probes 3 and 4)
+# ---------------------------------------------------------------------------
+
+def test_signoff_date_plausibility_fires_when_signoff_precedes_cover_date():
+    doc = load_fixture("minimal-signed.json")
+    assert doc["cover"]["date"] == "2026-08-01"
+    doc["step5_6"]["sign_off"]["assessor"]["date"] = "2020-01-01"
+    doc["step5_6"]["sign_off"]["dpo"]["date"] = "2020-01-01"
+    result = validate(doc, _ctx())
+    f = [f for f in result.findings if f.rule_id == "SIGNOFF-DATE-PLAUSIBILITY"]
+    assert len(f) == 2   # one per signer
+    assert all(x.severity == "rejection" for x in f)
+    assert result.status == "failed"
+
+
+def test_signoff_date_plausibility_fires_when_implausibly_far_in_the_future():
+    doc = load_fixture("minimal-signed.json")
+    doc["step5_6"]["sign_off"]["assessor"]["date"] = "2099-01-01"
+    result = validate(doc, _ctx())
+    f = next(f for f in result.findings if f.rule_id == "SIGNOFF-DATE-PLAUSIBILITY")
+    assert f.severity == "rejection"
+    assert result.status == "failed"
+
+
+def test_signoff_date_plausibility_does_not_fire_on_the_fixtures_own_dates():
+    doc = load_fixture("minimal-signed.json")
+    assert "SIGNOFF-DATE-PLAUSIBILITY" not in fired(validate(doc, _ctx()))
+
+
+def test_signoff_date_plausibility_does_not_fire_when_equal_to_cover_date():
+    doc = load_fixture("minimal-signed.json")
+    doc["step5_6"]["sign_off"]["assessor"]["date"] = doc["cover"]["date"]
+    doc["step5_6"]["sign_off"]["dpo"]["date"] = doc["cover"]["date"]
+    assert "SIGNOFF-DATE-PLAUSIBILITY" not in fired(validate(doc, _ctx()))
+
+
+def test_signoff_date_plausibility_tolerates_malformed_or_unparseable_dates():
+    doc = load_fixture("minimal-signed.json")
+    doc["step5_6"]["sign_off"]["assessor"]["date"] = "not-a-date"
+    doc["step5_6"]["sign_off"]["dpo"] = "not-a-dict"
+    result = validate(doc, _ctx())   # must not raise
+    assert "SIGNOFF-DATE-PLAUSIBILITY" not in fired(result)
+
+
 def test_delta_file_required_is_non_overridable():
     doc = load_fixture("minimal-signed.json")
     doc["ropa_delta"] = {"emitted": True, "delta_ref": "delta.json"}

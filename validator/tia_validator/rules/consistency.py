@@ -20,12 +20,23 @@ envelope facts of a supplied --delta payload locally, at the one place the
 repo's interchange contract tests never run. It must NOT re-assert the full
 acceptance check — that stays ropa's job (interchange-inbound-schema.json:7).
 """
+import datetime as _dt
 import re
 from pathlib import Path
 
 from ..findings import Finding
 from ..registry import rule
 from .completeness import _signoff_complete
+
+# EU27 + EEA/EFTA states (IS, LI, NO) — ISO 3166-1 alpha-2, matching the
+# convention already used for step1.destination_country across every fixture
+# and country profile (DE, GB, IN, US, ...), never a free-text country name.
+_EEA_STATES = frozenset({
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR",
+    "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK",
+    "SI", "ES", "SE",              # EU27
+    "IS", "LI", "NO",              # EEA/EFTA
+})
 
 _SPEC_MECH = "references/edpb-six-steps.md#step-2"
 _SPEC_STEP3 = "references/tia-template.md#section-3"
@@ -290,6 +301,105 @@ def onward_child(sidecar, ctx):
                     "child_assessment_ref is missing or empty.",
             spec_anchor=_SPEC_ONWARD, field="child_assessment_ref")]
     return []
+
+
+_SPEC_DEST_CRITERION3 = "references/transfer-qualification.md#the-three-cumulative-criteria"
+
+
+@rule(id="DEST-CRITERION3", severity="rejection", category="consistency",
+      description="step1.destination_country must not be an EU/EEA member "
+                  "state while transfer_qualification.criterion_3.met is "
+                  "true — criterion 3 requires the importer to be located in "
+                  "a THIRD country (EDPB Guidelines 05/2021 criterion 3); an "
+                  "EU/EEA destination paired with a met criterion 3 is a "
+                  "direct self-contradiction in the sidecar's own record.",
+      spec_anchor=_SPEC_DEST_CRITERION3)
+def dest_criterion3(sidecar, ctx):
+    step1 = sidecar.get("step1") if isinstance(sidecar, dict) else None
+    step1 = step1 if isinstance(step1, dict) else {}
+    destination = step1.get("destination_country")
+    if not isinstance(destination, str) or destination.strip().upper() not in _EEA_STATES:
+        return []
+
+    tq = sidecar.get("transfer_qualification") if isinstance(sidecar, dict) else None
+    tq = tq if isinstance(tq, dict) else {}
+    criterion_3 = tq.get("criterion_3")
+    if not isinstance(criterion_3, dict) or criterion_3.get("met") is not True:
+        return []
+
+    return [Finding(
+        rule_id="DEST-CRITERION3", category="consistency", severity="rejection",
+        message=f"step1.destination_country {destination!r} is an EU/EEA "
+                "member state, but transfer_qualification.criterion_3.met is "
+                "true — criterion 3 requires the importer to be located in a "
+                "third country, not the EU/EEA.",
+        spec_anchor=_SPEC_DEST_CRITERION3, field="destination_country")]
+
+
+_SPEC_SIGNOFF_DATES = "references/tia-template.md#section-6"
+_SIGNOFF_FUTURE_MAX_DAYS = 730
+
+
+def _parse_iso_date(value):
+    try:
+        return _dt.date.fromisoformat(value)
+    except (TypeError, ValueError):
+        return None
+
+
+@rule(id="SIGNOFF-DATE-PLAUSIBILITY", severity="rejection", category="consistency",
+      description="step5_6.sign_off assessor/dpo dates must not precede "
+                  "cover.date, and must not be more than 730 days after it — "
+                  "a sign-off date records when the assessment was actually "
+                  "completed, so it is either accurate or a data-entry "
+                  "defect. Unlike REVIEW-DATE's forward interval (which "
+                  "carries a review_interval_rationale field that can "
+                  "legitimise a long gap), there is no field that could make "
+                  "a sign-off dated decades away from cover.date genuine, so "
+                  "both directions are a rejection, not a warning.",
+      spec_anchor=_SPEC_SIGNOFF_DATES)
+def signoff_date_plausibility(sidecar, ctx):
+    cover = sidecar.get("cover") if isinstance(sidecar, dict) else None
+    cover = cover if isinstance(cover, dict) else {}
+    cover_date = _parse_iso_date(cover.get("date"))
+    if cover_date is None:
+        return []  # SCHEMA-0 / cover completeness already covers an absent or bad cover.date
+
+    step5_6 = sidecar.get("step5_6") if isinstance(sidecar, dict) else None
+    step5_6 = step5_6 if isinstance(step5_6, dict) else {}
+    sign_off = step5_6.get("sign_off")
+    sign_off = sign_off if isinstance(sign_off, dict) else {}
+
+    findings = []
+    for who in ("assessor", "dpo"):
+        entry = sign_off.get(who)
+        if not isinstance(entry, dict):
+            continue
+        raw_date = entry.get("date")
+        signed_date = _parse_iso_date(raw_date)
+        if signed_date is None:
+            continue  # not a parseable ISO date — SIGNOFF-GATE/SCHEMA-0 territory, not this rule
+        delta_days = (signed_date - cover_date).days
+        if delta_days < 0:
+            findings.append(Finding(
+                rule_id="SIGNOFF-DATE-PLAUSIBILITY", category="consistency",
+                severity="rejection",
+                message=f"step5_6.sign_off.{who}.date {raw_date!r} is "
+                        f"{-delta_days} day(s) before cover.date "
+                        f"{cover.get('date')!r} — sign-off cannot predate "
+                        "the assessment it signs off.",
+                spec_anchor=_SPEC_SIGNOFF_DATES, field=f"sign_off.{who}.date"))
+        elif delta_days > _SIGNOFF_FUTURE_MAX_DAYS:
+            findings.append(Finding(
+                rule_id="SIGNOFF-DATE-PLAUSIBILITY", category="consistency",
+                severity="rejection",
+                message=f"step5_6.sign_off.{who}.date {raw_date!r} is "
+                        f"{delta_days} days after cover.date "
+                        f"{cover.get('date')!r} (> {_SIGNOFF_FUTURE_MAX_DAYS}) "
+                        "— implausibly far in the future for a sign-off on "
+                        "this assessment.",
+                spec_anchor=_SPEC_SIGNOFF_DATES, field=f"sign_off.{who}.date"))
+    return findings
 
 
 @rule(id="DELTA-SHAPE", severity="rejection", category="interchange",

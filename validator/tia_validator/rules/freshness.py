@@ -35,16 +35,43 @@ def _non_empty_str(v) -> bool:
 @rule(id="DPF-EVIDENCE", severity="warning", category="freshness",
       description="step2.dpf_reliance, if present, carries non-empty "
                   "scope_evidence and currency_evidence — not a bare "
-                  "assertion of DPF coverage.",
+                  "assertion of DPF coverage. Also fires when mechanism is "
+                  "'adequacy', destination_country is 'US', and no "
+                  "dpf_reliance block is present at all: the EU has no "
+                  "general US adequacy decision, only the Data Privacy "
+                  "Framework for certified recipients (Implementing Decision "
+                  "(EU) 2023/1795), so an 'adequacy' claim for the US with no "
+                  "DPF block is a bare assertion by omission, not just an "
+                  "incomplete one (break-it 2026-10-02, fixes a short-circuit "
+                  "where dpf_reliance is None was treated as 'nothing to "
+                  "check' regardless of mechanism/destination).",
       spec_anchor=_SPEC_DPF)
 def dpf_evidence(sidecar, ctx):
     step2 = sidecar.get("step2") if isinstance(sidecar, dict) else None
     step2 = step2 if isinstance(step2, dict) else {}
     dpf = step2.get("dpf_reliance")
-    if dpf is None:
-        return []
-    dpf = dpf if isinstance(dpf, dict) else {}
 
+    if dpf is None:
+        step1 = sidecar.get("step1") if isinstance(sidecar, dict) else None
+        step1 = step1 if isinstance(step1, dict) else {}
+        destination = step1.get("destination_country")
+        is_us_adequacy_claim = (
+            step2.get("mechanism") == "adequacy"
+            and isinstance(destination, str)
+            and destination.strip().upper() == "US")
+        if not is_us_adequacy_claim:
+            return []
+        return [Finding(
+            rule_id="DPF-EVIDENCE", category="freshness", severity="warning",
+            message="step2.mechanism is 'adequacy' with destination_country "
+                    "'US' but step2.dpf_reliance is absent — the EU has no "
+                    "general US adequacy decision, only the Data Privacy "
+                    "Framework for certified recipients; record the "
+                    "dpf_reliance block with scope_evidence and "
+                    "currency_evidence, not a bare 'US adequacy' claim.",
+            spec_anchor=_SPEC_DPF, field="dpf_reliance")]
+
+    dpf = dpf if isinstance(dpf, dict) else {}
     missing = [f for f in ("scope_evidence", "currency_evidence")
                if not _non_empty_str(dpf.get(f))]
     if missing:

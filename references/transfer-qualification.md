@@ -63,16 +63,40 @@ Chapter V applies. The exporter must:
 
 ## Consequences If Any Criterion Is Not Met
 
-No Chapter V transfer. **But the processing is not off the hook.** Per Section 4 of the guidelines, the controller must still comply with:
-- Art. 5 — principles relating to processing
-- Art. 24 — controller responsibility
-- Art. 32 — security of processing (including risks from third-country laws)
-- Art. 28 — processor due diligence (especially for Example 12 scenarios)
+No Chapter V transfer. Which other GDPR obligations still bite depends on **which** criterion failed:
+
+- **Criterion 1 (exporter subject to GDPR) fails.** The GDPR does not apply
+  to this processing at all (Art. 3 is not met for it) — Chapter V is not
+  the only thing switched off. Art. 5/24/32 are not "still mandatory" for
+  this processing, because nothing in the GDPR governs it in the first
+  place. (This is a narrow, processing-specific conclusion: the same
+  exporter's *other* processing may independently be subject to the GDPR —
+  that is assessed on its own facts, not inherited from this finding.)
+- **Criterion 2 or 3 fails, but criterion 1 is met.** The exporter *is*
+  subject to the GDPR for this processing (Art. 3 applies) — only the
+  Chapter V transfer machinery does not engage, because there is no
+  disclosure to a separate entity (criterion 2) or no third-country
+  importer (criterion 3). Per Section 4 of the guidelines, the controller
+  must still comply with:
+  - Art. 5 — principles relating to processing
+  - Art. 24 — controller responsibility
+  - Art. 32 — security of processing (including risks from third-country laws)
+  - Art. 28 — processor due diligence (especially for Example 12 scenarios)
+
+Source check: EDPB Guidelines 05/2021 v2.0 frames this safeguards-still-apply
+passage around the criterion-2 scenario by name (same-entity processing
+abroad, e.g. an employee travelling or Art. 3(2) direct collection — Section
+4, "SAFEGUARDS TO BE PROVIDED IF PERSONAL DATA ARE PROCESSED OUTSIDE THE EEA
+BUT NO TRANSFER TAKES PLACE"), which presupposes the controller remains
+subject to the GDPR under Art. 3 — i.e. criterion 1 is met. It does not
+address what happens when criterion 1 itself fails, because by definition
+the GDPR already does not apply to that processing.
 
 The skill outputs a **Transfer Qualification Finding** documenting:
 - Which criterion failed and why
 - That Chapter V does not apply to this processing
-- That Art. 5/24/32 safeguards remain mandatory
+- Whether Art. 5/24/32 remain mandatory (criterion 2/3 failure) or are not
+  engaged for this processing at all (criterion 1 failure) — see above
 - For Example 12 scenarios: that an Art. 28 assessment of the processor's exposure to extraterritorial law is required
 
 This finding IS a valuable deliverable — it documents that the organisation analysed the question and concluded Chapter V does not apply, with reasoning that can be defended on audit.
